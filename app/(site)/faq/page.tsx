@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { faqs } from "@/lib/site";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = { title: "FAQ" };
 
-export default function Faq() {
+export default async function Faq() {
+  const { faqs } = await getContent();
   return (
     <>
       <section className="bg-olive px-4 py-14 text-center">

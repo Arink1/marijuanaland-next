@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import { Josefin_Sans, Cabin, Inter, Archivo } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import AgeGate from "@/components/AgeGate";
-import SignupPopup from "@/components/SignupPopup";
 import { site } from "@/lib/site";
 
 const josefin = Josefin_Sans({
@@ -36,11 +32,7 @@ export default function RootLayout({
       <body
         className={`${josefin.variable} ${cabin.variable} ${inter.variable} ${archivo.variable} antialiased`}
       >
-        <AgeGate />
-        <Header />
-        <main>{children}</main>
-        <Footer />
-        <SignupPopup />
+        {children}
       </body>
     </html>
   );

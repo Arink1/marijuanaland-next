@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { site } from "@/lib/site";
+import type { SiteInfo } from "@/lib/content";
 
 const productLinks = [
   "Flower",
@@ -11,7 +11,7 @@ const productLinks = [
   "Merch",
 ];
 
-export default function Footer() {
+export default function Footer({ site }: { site: SiteInfo }) {
   return (
     <footer className="bg-smoke pt-14 text-sm">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 pb-10 md:grid-cols-3">

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { dealTiles, type MarkKind } from "@/lib/site";
+import { type MarkKind } from "@/lib/site";
+import type { DealTile } from "@/lib/site";
 
 // CSS-only category marks — deliberately generic, no brand iconography.
 function Mark({ kind }: { kind: MarkKind }) {
@@ -31,7 +32,7 @@ function Mark({ kind }: { kind: MarkKind }) {
   }
 }
 
-export default function DealsStrip() {
+export default function DealsStrip({ tiles }: { tiles: DealTile[] }) {
   return (
     <section className="deals-band relative font-(family-name:--font-archivo)">
       <h2 className="deals-eyebrow">Today at the Shop</h2>
@@ -44,7 +45,7 @@ export default function DealsStrip() {
         </span>
       </p>
       <div className="deals-row">
-        {dealTiles.map((t, i) => (
+        {tiles.map((t, i) => (
           <Link
             key={t.category}
             href={t.href}

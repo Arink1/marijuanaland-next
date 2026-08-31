@@ -3,16 +3,24 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { menuCategories, menuItems, site } from "@/lib/site";
+import { menuCategories } from "@/lib/site";
+import type { MenuItem } from "@/lib/site";
+import type { SiteInfo } from "@/lib/content";
 
 const ALL = "All";
 
-export default function ShopMenu() {
+export default function ShopMenu({
+  items,
+  site,
+}: {
+  items: MenuItem[];
+  site: SiteInfo;
+}) {
   const [active, setActive] = useState(ALL);
   const shown =
     active === ALL
-      ? menuItems
-      : menuItems.filter((i) => i.category === active);
+      ? items
+      : items.filter((i) => i.category === active);
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 lg:py-14">

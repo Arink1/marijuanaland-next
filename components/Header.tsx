@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { mobileNav, nav, site } from "@/lib/site";
+import { mobileNav, nav } from "@/lib/site";
+import type { SiteInfo } from "@/lib/content";
 
-export default function Header() {
+export default function Header({ site }: { site: SiteInfo }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();

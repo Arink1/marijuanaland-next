@@ -2,7 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import Testimonials from "@/components/Testimonials";
 import DealsStrip from "@/components/DealsStrip";
-import { categories, deals, faqs, instagramImages, site } from "@/lib/site";
+import { categories, instagramImages } from "@/lib/site";
+import { getContent } from "@/lib/content";
 
 // Mobile placement mirrors the original site: flower full-width, then
 // topicals + cartridges side by side, then pre-rolls and edibles full-width.
@@ -56,7 +57,8 @@ function DealCard({
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const { site, deals, dealTiles, faqs } = await getContent();
   return (
     <>
       {/* Hero */}
@@ -125,7 +127,7 @@ export default function Home() {
       </section>
 
       {/* Today at the Shop — animated deals strip */}
-      <DealsStrip />
+      <DealsStrip tiles={dealTiles} />
 
       <Testimonials />
 
