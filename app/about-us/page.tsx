@@ -9,7 +9,7 @@ export default function AboutUs() {
   return (
     <>
       <section className="bg-olive px-4 py-14 text-center">
-        <h1 className="text-3xl font-bold uppercase tracking-brand text-cream">
+        <h1 className="text-3xl font-medium uppercase tracking-brand text-cream">
           About Us
         </h1>
       </section>

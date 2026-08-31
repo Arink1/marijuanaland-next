@@ -64,7 +64,7 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative mt-40 flex flex-col items-center px-4 text-center">
-          <h1 className="text-3xl font-bold uppercase tracking-brand text-gold sm:text-5xl">
+          <h1 className="text-3xl font-medium uppercase tracking-brand text-gold sm:text-5xl">
             Welcome to Marijuana Land
           </h1>
           <p className="mt-4 text-lg font-semibold text-white">
@@ -116,7 +116,7 @@ export default function Home() {
 
       {/* Top brands */}
       <section className="bg-ink px-4 py-16">
-        <h2 className="text-center text-2xl font-bold uppercase tracking-brand text-gold">
+        <h2 className="text-center text-2xl font-medium uppercase tracking-brand text-gold">
           Our Top Brands
         </h2>
         <div className="mx-auto mt-10 flex max-w-5xl flex-wrap items-center justify-center gap-10">
@@ -162,6 +162,17 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Bag animation */}
+      <section className="flex justify-center bg-cream px-4 pt-16">
+        <Image
+          src="/images/Marijuana-Land-Bag.gif"
+          alt="Marijuana Land shopping bag"
+          width={450}
+          height={450}
+          unoptimized
+        />
+      </section>
+
       {/* FAQ preview */}
       <section className="bg-cream px-4 py-16">
         <h2 className="text-center text-2xl font-bold uppercase tracking-brand">
@@ -187,7 +198,7 @@ export default function Home() {
 
       {/* Instagram */}
       <section className="bg-cream px-4 pb-16 pt-4 text-center">
-        <h2 className="inline-flex items-center gap-3 text-xl font-bold uppercase tracking-brand text-olive">
+        <h2 className="inline-flex items-center gap-3 text-xl font-medium uppercase tracking-brand text-olive">
           <Image
             src="/images/MariuanaLand-icons_icon-48px-instagram-copy-1.png"
             alt=""

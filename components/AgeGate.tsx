@@ -48,7 +48,7 @@ export default function AgeGate() {
         />
         {status === "pending" ? (
           <>
-            <h1 className="text-2xl font-bold uppercase tracking-brand text-gold sm:text-3xl">
+            <h1 className="text-2xl font-medium uppercase tracking-brand text-gold sm:text-3xl">
               Are you older than 21?
             </h1>
             <div className="mt-6 flex gap-4">
