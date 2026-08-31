@@ -63,7 +63,16 @@ export default function Home() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-black/30" />
-        <div className="relative mt-40 flex flex-col items-center px-4 text-center">
+        <div className="relative flex flex-col items-center px-4 text-center">
+          <Image
+            src="/images/Marijuana-Land-Badge2.gif"
+            alt=""
+            width={130}
+            height={130}
+            priority
+            unoptimized
+            className="mb-8"
+          />
           <h1 className="text-3xl font-medium uppercase tracking-brand text-gold sm:text-5xl">
             Welcome to Marijuana Land
           </h1>
@@ -153,29 +162,26 @@ export default function Home() {
             our roots run deep in the rich, fertile soils that have produced
             some of the state&apos;s most celebrated brands.
           </p>
+          <Image
+            src="/images/Marijuana-Land-Bag.gif"
+            alt="Marijuana Land shopping bag"
+            width={380}
+            height={380}
+            unoptimized
+            className="mx-auto mt-6"
+          />
           <Link
             href="/about-us"
-            className="mt-7 inline-block rounded bg-orange px-8 py-2.5 font-(family-name:--font-josefin) font-bold text-white transition hover:bg-orange-dark"
+            className="mt-6 inline-block rounded bg-orange px-8 py-2.5 font-(family-name:--font-josefin) font-bold text-white transition hover:bg-orange-dark"
           >
             About Us
           </Link>
         </div>
       </section>
 
-      {/* Bag animation */}
-      <section className="flex justify-center bg-cream px-4 pt-16">
-        <Image
-          src="/images/Marijuana-Land-Bag.gif"
-          alt="Marijuana Land shopping bag"
-          width={450}
-          height={450}
-          unoptimized
-        />
-      </section>
-
       {/* FAQ preview */}
       <section className="bg-cream px-4 py-16">
-        <h2 className="text-center text-2xl font-bold uppercase tracking-brand">
+        <h2 className="text-center text-2xl font-bold uppercase tracking-brand text-olive">
           Got a Question?
         </h2>
         <div className="mx-auto mt-8 max-w-3xl space-y-3">

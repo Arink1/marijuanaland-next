@@ -39,7 +39,7 @@ export const deals = [
   {
     title: "topicals",
     text: "buy 3, get 1 free",
-    image: "/images/shop-8.png",
+    image: "/images/shop-6.png",
     tall: true,
   },
   {
@@ -63,18 +63,20 @@ export const deals = [
   {
     title: "cartridges",
     text: "premium selection",
-    image: "/images/shop-6.png",
+    image: "/images/shop-8.png",
     tall: true,
   },
 ];
 
+// Order matches the original site: Cookies, Lume, Choice,
+// Detroit Edibles, Pure Options, Detroit Edibles
 export const brands = [
+  "/images/Group-89.png",
   "/images/Group-84.png",
   "/images/Group-85.png",
   "/images/Group-86.png",
   "/images/Group-87.png",
-  "/images/Group-88-1.png",
-  "/images/Group-89.png",
+  "/images/Group-86-1.png",
 ];
 
 export const testimonials = [

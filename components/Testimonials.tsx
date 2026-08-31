@@ -19,7 +19,7 @@ export default function Testimonials() {
         <button
           onClick={() => step(-1)}
           aria-label="Previous testimonial"
-          className="rounded bg-gold px-3 py-2 font-bold text-ink"
+          className="rounded bg-orange px-3 py-2 font-bold text-white"
         >
           &lsaquo;
         </button>
@@ -39,7 +39,7 @@ export default function Testimonials() {
         <button
           onClick={() => step(1)}
           aria-label="Next testimonial"
-          className="rounded bg-gold px-3 py-2 font-bold text-ink"
+          className="rounded bg-orange px-3 py-2 font-bold text-white"
         >
           &rsaquo;
         </button>

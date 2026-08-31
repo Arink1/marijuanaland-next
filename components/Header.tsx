@@ -3,12 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { nav, site } from "@/lib/site";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <header className="sticky top-0 z-50">
@@ -48,6 +49,27 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-4">
+            <form
+              className="hidden items-stretch overflow-hidden rounded bg-white lg:flex"
+              onSubmit={(e) => {
+                e.preventDefault();
+                router.push("/shop");
+              }}
+            >
+              <input
+                type="search"
+                placeholder="What are you looking for?"
+                aria-label="Search"
+                className="w-52 px-3 py-2 text-sm text-ink outline-none placeholder:text-stone-warm/60"
+              />
+              <button
+                type="submit"
+                aria-label="Search"
+                className="bg-ink px-3 text-white"
+              >
+                ⌕
+              </button>
+            </form>
             <Link
               href="/shop"
               aria-label="Cart"
