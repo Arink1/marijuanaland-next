@@ -155,3 +155,47 @@ export const instagramImages = [
 // confirmed active — the Shop page will then load the live menu.
 export const MEADOW_ENABLED = false;
 export const MEADOW_ORG_ID = "1192";
+
+// ---------------------------------------------------------------------------
+// Placeholder shop menu. Illustrative only — shown until the live Meadow menu
+// is switched on with MEADOW_ENABLED. Names, potency and prices are samples,
+// not real inventory, and the cards deliberately do not offer checkout.
+export type MenuItem = {
+  name: string;
+  category: string;
+  strain: "Indica" | "Sativa" | "Hybrid" | "CBD";
+  thc: string;
+  price: string;
+  size: string;
+  image: string;
+};
+
+export const menuCategories = [
+  "Flower",
+  "Pre-Rolls",
+  "Cartridges",
+  "Edibles",
+  "Concentrates",
+  "Topicals",
+];
+
+export const menuItems: MenuItem[] = [
+  { name: "Northern Lights", category: "Flower", strain: "Indica", thc: "22%", price: "$25", size: "1/8 oz", image: "/images/shop-2.png" },
+  { name: "Superior Haze", category: "Flower", strain: "Sativa", thc: "24%", price: "$30", size: "1/8 oz", image: "/images/shop-2.png" },
+  { name: "Seney Sunset", category: "Flower", strain: "Hybrid", thc: "21%", price: "$28", size: "1/8 oz", image: "/images/shop-2.png" },
+  { name: "Two-Hearted Preroll", category: "Pre-Rolls", strain: "Hybrid", thc: "20%", price: "$12", size: "1 g", image: "/images/shop-3.png" },
+  { name: "Campfire 5-Pack", category: "Pre-Rolls", strain: "Indica", thc: "19%", price: "$45", size: "5 x 0.5 g", image: "/images/shop-3.png" },
+  { name: "Trailhead Singles", category: "Pre-Rolls", strain: "Sativa", thc: "23%", price: "$10", size: "1 g", image: "/images/shop-3.png" },
+  { name: "Copper Ridge Cart", category: "Cartridges", strain: "Hybrid", thc: "85%", price: "$40", size: "1 g", image: "/images/shop-8.png" },
+  { name: "Lakeshore Live Resin", category: "Cartridges", strain: "Sativa", thc: "88%", price: "$50", size: "1 g", image: "/images/shop-8.png" },
+  { name: "Evergreen Distillate", category: "Cartridges", strain: "Indica", thc: "82%", price: "$35", size: "0.5 g", image: "/images/shop-8.png" },
+  { name: "Thimbleberry Gummies", category: "Edibles", strain: "Hybrid", thc: "100 mg", price: "$30", size: "10-pack", image: "/images/shop-4.png" },
+  { name: "Maple Chews", category: "Edibles", strain: "Indica", thc: "100 mg", price: "$28", size: "10-pack", image: "/images/shop-4.png" },
+  { name: "Birch Bark Mints", category: "Edibles", strain: "Sativa", thc: "50 mg", price: "$18", size: "20-pack", image: "/images/shop-4.png" },
+  { name: "Pictured Rocks Rosin", category: "Concentrates", strain: "Hybrid", thc: "76%", price: "$55", size: "1 g", image: "/images/Rectangle-104-1.png" },
+  { name: "Cold Smoke Badder", category: "Concentrates", strain: "Indica", thc: "72%", price: "$45", size: "1 g", image: "/images/Rectangle-104-1.png" },
+  { name: "Driftwood Shatter", category: "Concentrates", strain: "Sativa", thc: "78%", price: "$40", size: "1 g", image: "/images/Rectangle-104-1.png" },
+  { name: "Recovery Balm", category: "Topicals", strain: "CBD", thc: "200 mg", price: "$35", size: "2 oz", image: "/images/shop-6.png" },
+  { name: "Trail Relief Oil", category: "Topicals", strain: "CBD", thc: "500 mg", price: "$48", size: "1 oz", image: "/images/shop-6.png" },
+  { name: "Winter Salve", category: "Topicals", strain: "CBD", thc: "150 mg", price: "$30", size: "2 oz", image: "/images/shop-6.png" },
+];
