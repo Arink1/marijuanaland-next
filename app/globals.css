@@ -21,7 +21,10 @@
 body {
   background: var(--color-smoke);
   color: var(--color-ink);
-  font-family: var(--font-inter), sans-serif;
+  /* Body copy is Josefin Sans 500 on the original site; Inter is reserved
+     for the small nav / category links. */
+  font-family: var(--font-josefin), sans-serif;
+  font-weight: 500;
 }
 
 h1,

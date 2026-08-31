@@ -102,7 +102,7 @@ export default function Home() {
             <li key={c} className="shrink-0">
               <Link
                 href="/shop"
-                className={`font-(family-name:--font-josefin) font-semibold ${
+                className={`font-(family-name:--font-inter) text-sm font-medium ${
                   idx === 0
                     ? "border-b-2 border-orange text-orange"
                     : "text-ink hover:text-orange"

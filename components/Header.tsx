@@ -22,7 +22,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50">
-      <div className="bg-ink px-4 py-2 text-center text-xs font-semibold tracking-wide text-white sm:text-sm">
+      <div className="bg-ink px-4 py-2 text-center text-[13px] font-bold tracking-wide text-white sm:text-sm">
         {site.promo}{" "}
         <Link href="/shop" className="text-gold underline">
           Shop Now
@@ -47,7 +47,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded px-4 py-1.5 font-(family-name:--font-josefin) font-semibold transition ${
+                className={`rounded px-4 py-1.5 font-(family-name:--font-inter) text-[17px] font-normal transition ${
                   pathname === item.href
                     ? "bg-cream-deep text-ink"
                     : "text-cream hover:bg-white/10"
