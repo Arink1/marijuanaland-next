@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import Testimonials from "@/components/Testimonials";
+import DealsStrip from "@/components/DealsStrip";
 import {
-  brands,
   categories,
   deals,
   faqs,
@@ -123,24 +123,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Top brands */}
-      <section className="bg-ink px-4 py-16">
-        <h2 className="text-center text-2xl font-medium uppercase tracking-brand text-gold">
-          Our Top Brands
-        </h2>
-        <div className="mx-auto mt-10 flex max-w-5xl flex-wrap items-center justify-center gap-10">
-          {brands.map((b) => (
-            <Image
-              key={b}
-              src={b}
-              alt="Brand logo"
-              width={110}
-              height={110}
-              className="h-20 w-auto object-contain"
-            />
-          ))}
-        </div>
-      </section>
+      {/* Today at the Shop — animated deals strip */}
+      <DealsStrip />
 
       <Testimonials />
 
@@ -163,11 +147,10 @@ export default function Home() {
             some of the state&apos;s most celebrated brands.
           </p>
           <Image
-            src="/images/Marijuana-Land-Bag.gif"
+            src="/images/ml-bag.png"
             alt="Marijuana Land shopping bag"
             width={380}
             height={380}
-            unoptimized
             className="mx-auto mt-6"
           />
           <Link

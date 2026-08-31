@@ -34,3 +34,227 @@ h4 {
 .tracking-brand {
   letter-spacing: 0.12em;
 }
+
+/* ---- "Today at the Shop" deals strip ------------------------------------ */
+/* Spec: design_handoff_deals_strip — hifi values, reproduce exactly.        */
+
+.deals-band {
+  background: #14150f;
+  padding: 52px 0 56px;
+  text-align: center;
+}
+
+.deals-eyebrow {
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #f0a020;
+  margin-bottom: 8px;
+}
+
+.deals-subhead {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(244, 238, 226, 0.45);
+  margin-bottom: 36px;
+}
+
+.deals-subhead-mobile {
+  display: none;
+}
+
+.deals-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.deals-tile {
+  flex: 0 0 auto;
+  display: block;
+  width: 132px;
+  height: 132px;
+  perspective: 800px;
+}
+
+.deals-tile:hover {
+  filter: brightness(1.06);
+}
+
+.deals-tile:focus-visible {
+  outline: 2px solid #f0a020;
+  outline-offset: 3px;
+}
+
+.deals-flipper {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: flipTile 10s ease-in-out infinite;
+}
+
+@keyframes flipTile {
+  0%,
+  34% {
+    transform: rotateY(0deg);
+  }
+  46%,
+  84% {
+    transform: rotateY(180deg);
+  }
+  96%,
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+.deals-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.deals-face-front {
+  background: #f4eee2;
+  gap: 13px;
+}
+
+.deals-face-back {
+  transform: rotateY(180deg);
+  gap: 7px;
+}
+
+.deals-back-green {
+  background: #4c6b2f;
+  color: #f4eee2;
+}
+
+.deals-back-green .deals-caption {
+  color: rgba(244, 238, 226, 0.82);
+}
+
+.deals-back-accent {
+  background: #f0a020;
+  color: #14150f;
+}
+
+.deals-back-accent .deals-caption {
+  color: rgba(20, 21, 15, 0.72);
+}
+
+.deals-mark {
+  border-color: #3d5a26;
+}
+
+.deals-mark-fill {
+  background: #3d5a26;
+}
+
+.deals-category {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #22261b;
+}
+
+.deals-figure {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+/* wider figures (2/$30, B1G1, 5/$20) */
+.deals-figure-wide {
+  font-size: 26px;
+}
+
+.deals-caption {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+/* reduced-motion / fallback line inside the front face */
+.deals-static {
+  display: none;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #4c6b2f;
+}
+
+.deals-divider {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background: #4c6b2f;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deals-flipper {
+    animation: none !important;
+    transform: none !important;
+  }
+  .deals-face-back {
+    display: none !important;
+  }
+  .deals-static {
+    display: block !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .deals-eyebrow {
+    font-size: 14px;
+    letter-spacing: 0.26em;
+  }
+  .deals-subhead {
+    font-size: 12px;
+  }
+  .deals-subhead-desktop {
+    display: none;
+  }
+  .deals-subhead-mobile {
+    display: inline;
+  }
+  .deals-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    justify-content: flex-start;
+    padding: 0 20px 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .deals-row::-webkit-scrollbar {
+    display: none;
+  }
+  .deals-tile {
+    scroll-snap-align: center;
+    width: 118px;
+    height: 118px;
+    perspective: 700px;
+  }
+  .deals-face {
+    border-radius: 15px;
+  }
+  .deals-figure {
+    font-size: 25px;
+  }
+  .deals-caption {
+    font-size: 8px;
+  }
+}

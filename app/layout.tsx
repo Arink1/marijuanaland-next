@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Josefin_Sans, Cabin, Inter } from "next/font/google";
+import { Josefin_Sans, Cabin, Inter, Archivo } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -13,6 +13,11 @@ const josefin = Josefin_Sans({
 });
 const cabin = Cabin({ subsets: ["latin"], variable: "--font-cabin" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["500", "700", "800"],
+  variable: "--font-archivo",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -29,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${josefin.variable} ${cabin.variable} ${inter.variable} antialiased`}
+        className={`${josefin.variable} ${cabin.variable} ${inter.variable} ${archivo.variable} antialiased`}
       >
         <AgeGate />
         <Header />

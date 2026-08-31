@@ -68,15 +68,28 @@ export const deals = [
   },
 ];
 
-// Order matches the original site: Cookies, Lume, Choice,
-// Detroit Edibles, Pure Options, Detroit Edibles
-export const brands = [
-  "/images/Group-89.png",
-  "/images/Group-84.png",
-  "/images/Group-85.png",
-  "/images/Group-86.png",
-  "/images/Group-87.png",
-  "/images/Group-86-1.png",
+// "Today at the Shop" deals strip (replaces the licensed brand-logo row).
+// Deal copy is placeholder per the design handoff — swap for real offers,
+// ideally sourced from the menu API so staff can change deals without a deploy.
+export type MarkKind = "circle" | "bars" | "bar" | "diamond" | "dots" | "pill";
+
+export type DealTile = {
+  category: string;
+  mark: MarkKind;
+  figure: string;
+  caption: string;
+  staticLabel: string;
+  href: string;
+  tone: "green" | "accent";
+};
+
+export const dealTiles: DealTile[] = [
+  { category: "FLOWER", mark: "circle", figure: "20%", caption: "OFF OUNCES", staticLabel: "20% OFF OUNCES", href: "/shop", tone: "green" },
+  { category: "EDIBLES", mark: "bars", figure: "2/$30", caption: "GUMMY PACKS", staticLabel: "2/$30 GUMMY PACKS", href: "/shop", tone: "accent" },
+  { category: "VAPES", mark: "bar", figure: "$25", caption: "ALL 1G CARTS", staticLabel: "$25 ALL 1G CARTS", href: "/shop", tone: "green" },
+  { category: "CONCENTRATES", mark: "diamond", figure: "B1G1", caption: "LIVE ROSIN", staticLabel: "B1G1 LIVE ROSIN", href: "/shop", tone: "accent" },
+  { category: "PRE-ROLLS", mark: "dots", figure: "5/$20", caption: "HALF GRAMS", staticLabel: "5/$20 HALF GRAMS", href: "/shop", tone: "green" },
+  { category: "TOPICALS", mark: "pill", figure: "15%", caption: "BALMS + OILS", staticLabel: "15% BALMS + OILS", href: "/shop", tone: "accent" },
 ];
 
 export const testimonials = [
