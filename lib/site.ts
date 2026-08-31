@@ -26,6 +26,19 @@ export const nav = [
   { label: "Gallery", href: "/gallery" },
 ];
 
+// Mobile slide-out menu — mirrors the original site's 8-item mobile nav.
+// "Brands" and "Deals" both pointed at the shop menu on the old site.
+export const mobileNav = [
+  { label: "Home", href: "/" },
+  { label: "Shop", href: "/shop" },
+  { label: "Brands", href: "/shop" },
+  { label: "Deals", href: "/shop" },
+  { label: "FAQ", href: "/faq" },
+  { label: "About Us", href: "/about-us" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact Us", href: "/contact" },
+];
+
 export const categories = [
   "Deals",
   "Flower",

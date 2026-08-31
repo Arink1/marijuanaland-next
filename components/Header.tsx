@@ -1,15 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { nav, site } from "@/lib/site";
+import { mobileNav, nav, site } from "@/lib/site";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  // close the slide-out on navigation, and lock body scroll while it is open
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-50">
@@ -19,15 +28,16 @@ export default function Header() {
           Shop Now
         </Link>
       </div>
+
       <div className="bg-olive">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-[10px] py-1.5 md:px-4 md:py-3">
           <Link href="/" className="shrink-0">
             <Image
               src="/images/header-logo-n.png"
               alt="Marijuana Land"
-              width={140}
-              height={64}
-              className="h-12 w-auto sm:h-14"
+              width={143}
+              height={52}
+              className="h-[52px] w-auto md:h-14"
               priority
             />
           </Link>
@@ -70,45 +80,79 @@ export default function Header() {
                 ⌕
               </button>
             </form>
+
             <Link
               href="/shop"
               aria-label="Cart"
               className="hidden text-cream sm:block"
             >
-              <Image
-                src="/images/cart-icon.png"
-                alt=""
-                width={30}
-                height={30}
-              />
+              <Image src="/images/cart-icon.png" alt="" width={30} height={30} />
             </Link>
+
             <button
               className="md:hidden"
-              aria-label="Menu"
-              onClick={() => setOpen(!open)}
+              aria-label="Open menu"
+              aria-expanded={open}
+              onClick={() => setOpen(true)}
             >
-              <div className="space-y-1.5">
-                <span className="block h-0.5 w-6 bg-cream" />
-                <span className="block h-0.5 w-6 bg-cream" />
-                <span className="block h-0.5 w-6 bg-cream" />
-              </div>
+              <Image
+                src="/images/nav-line.svg"
+                alt=""
+                width={32}
+                height={30}
+                className="h-[30px] w-8"
+              />
             </button>
           </div>
         </div>
-        {open && (
-          <nav className="border-t border-white/10 px-4 pb-4 md:hidden">
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="block py-2.5 font-(family-name:--font-josefin) font-semibold text-cream"
-              >
-                {item.label}
-              </Link>
+      </div>
+
+      {/* Mobile slide-out: full-screen olive panel, matching the original site */}
+      <div
+        className={`fixed inset-0 z-50 bg-olive md:hidden ${
+          open ? "flex" : "hidden"
+        } flex-col`}
+      >
+        <div className="flex items-center justify-between px-[10px] py-4">
+          <Link href="/" onClick={() => setOpen(false)}>
+            <Image
+              src="/images/header-logo-n.png"
+              alt="Marijuana Land"
+              width={124}
+              height={45}
+              className="h-[45px] w-auto"
+            />
+          </Link>
+          <button
+            aria-label="Close menu"
+            onClick={() => setOpen(false)}
+            className="p-1"
+          >
+            <Image
+              src="/images/nav-close.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="h-6 w-6"
+            />
+          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto px-[10px]">
+          <ul>
+            {mobileNav.map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="flex h-[60px] items-center font-(family-name:--font-cabin) text-2xl text-cream-deep"
+                >
+                  {item.label}
+                </Link>
+              </li>
             ))}
-          </nav>
-        )}
+          </ul>
+        </nav>
       </div>
     </header>
   );
