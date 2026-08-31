@@ -147,10 +147,11 @@ export default function Home() {
             some of the state&apos;s most celebrated brands.
           </p>
           <Image
-            src="/images/ml-bag.png"
+            src="/images/unbranded-cannabis-bag.gif"
             alt="Marijuana Land shopping bag"
-            width={380}
-            height={380}
+            width={360}
+            height={360}
+            unoptimized
             className="mx-auto mt-6"
           />
           <Link
