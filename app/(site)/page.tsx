@@ -4,6 +4,7 @@ import Testimonials from "@/components/Testimonials";
 import DealsStrip from "@/components/DealsStrip";
 import { categories, instagramImages } from "@/lib/site";
 import { getContent } from "@/lib/content";
+import { isLive, todayInShop } from "@/lib/schedule";
 
 // Mobile placement mirrors the original site: flower full-width, then
 // topicals + cartridges side by side, then pre-rolls and edibles full-width.
@@ -58,7 +59,15 @@ function DealCard({
 }
 
 export default async function Home() {
-  const { site, deals, dealTiles, faqs } = await getContent();
+  const { site, deals, dealTiles, faqs, testimonials } = await getContent();
+
+  // Scheduled deals: only what is live today (shop time). The card mosaic
+  // has five slots, so the first five live cards fill them in order.
+  const today = todayInShop();
+  const cards = deals.filter((d) => isLive(d, today)).slice(0, dealLayout.length);
+  const tiles = dealTiles.filter((t) => isLive(t, today));
+  const reviews = testimonials.filter((t) => t.show !== false);
+
   return (
     <>
       {/* Hero */}
@@ -120,16 +129,22 @@ export default async function Home() {
       {/* Deals grid */}
       <section className="mx-auto max-w-7xl px-[15px] py-6 lg:px-4 lg:py-12">
         <div className="grid grid-cols-2 gap-[9px] lg:grid-cols-4 lg:gap-5">
-          {deals.map((d, i) => (
-            <DealCard key={d.title} {...d} className={dealLayout[i]} />
+          {cards.map((d, i) => (
+            <DealCard
+              key={i}
+              title={d.title}
+              text={d.text}
+              image={d.image}
+              className={dealLayout[i]}
+            />
           ))}
         </div>
       </section>
 
       {/* Today at the Shop — animated deals strip */}
-      <DealsStrip tiles={dealTiles} />
+      {tiles.length > 0 && <DealsStrip tiles={tiles} />}
 
-      <Testimonials />
+      <Testimonials items={reviews} />
 
       {/* Our story */}
       <section className="relative overflow-hidden">

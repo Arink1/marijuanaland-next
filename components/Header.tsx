@@ -7,7 +7,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { mobileNav, nav } from "@/lib/site";
 import type { SiteInfo } from "@/lib/content";
 
-export default function Header({ site }: { site: SiteInfo }) {
+export default function Header({
+  site,
+  notice,
+}: {
+  site: SiteInfo;
+  /** Hours/closure notice text, or null when none is active. */
+  notice: string | null;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -23,6 +30,17 @@ export default function Header({ site }: { site: SiteInfo }) {
 
   return (
     <header className="sticky top-0 z-50">
+      {notice && (
+        <div
+          role="status"
+          className="bg-gold px-4 py-2.5 text-center text-sm font-bold text-ink sm:text-base"
+        >
+          <span aria-hidden className="mr-2">
+            ⏰
+          </span>
+          {notice}
+        </div>
+      )}
       <div className="bg-ink px-4 py-2 text-center text-[13px] font-bold tracking-wide text-white sm:text-sm">
         {site.promo}{" "}
         <Link href="/shop" className="text-gold underline">

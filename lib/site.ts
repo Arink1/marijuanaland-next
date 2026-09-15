@@ -94,6 +94,9 @@ export type DealTile = {
   staticLabel: string;
   href: string;
   tone: "green" | "accent";
+  /** Optional YYYY-MM-DD window; blank = always shown. */
+  start?: string;
+  end?: string;
 };
 
 export const dealTiles: DealTile[] = [

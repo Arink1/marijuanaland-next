@@ -1,22 +1,32 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AgeGate from "@/components/AgeGate";
+import PreviewBar from "@/components/PreviewBar";
 import SignupPopup from "@/components/SignupPopup";
 import { getContent } from "@/lib/content";
+import { todayInShop } from "@/lib/schedule";
 
 export default async function SiteLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { site } = await getContent();
+  const { site, notice } = await getContent();
+
+  // The hours notice shows only while switched on, non-empty and not expired.
+  const noticeActive =
+    notice.enabled &&
+    notice.message.trim() !== "" &&
+    (!notice.until || notice.until >= todayInShop());
+
   return (
     <>
       <AgeGate />
-      <Header site={site} />
+      <Header site={site} notice={noticeActive ? notice.message : null} />
       <main>{children}</main>
       <Footer site={site} />
       <SignupPopup />
+      <PreviewBar />
     </>
   );
 }

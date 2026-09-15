@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { testimonials } from "@/lib/site";
+import type { Testimonial } from "@/lib/content";
 
-export default function Testimonials() {
+export default function Testimonials({ items }: { items: Testimonial[] }) {
   const [i, setI] = useState(0);
-  const t = testimonials[i];
-  const step = (d: number) =>
-    setI((i + d + testimonials.length) % testimonials.length);
+  if (items.length === 0) return null;
+
+  const t = items[i % items.length];
+  const step = (d: number) => setI((i + d + items.length) % items.length);
+  const rating = Math.min(5, Math.max(0, Math.round(Number(t.rating) || 0)));
 
   return (
     <section className="bg-olive px-4 py-8 lg:py-16">
@@ -19,7 +21,8 @@ export default function Testimonials() {
         <button
           onClick={() => step(-1)}
           aria-label="Previous testimonial"
-          className="rounded bg-orange px-3 py-2 font-bold text-white"
+          disabled={items.length < 2}
+          className="rounded bg-orange px-3 py-2 font-bold text-white disabled:opacity-40"
         >
           &lsaquo;
         </button>
@@ -31,15 +34,27 @@ export default function Testimonials() {
             height={28}
             className="mx-auto mb-3 lg:mb-5"
           />
+          {rating > 0 && (
+            <p
+              className="mb-2 text-lg tracking-widest text-gold"
+              aria-label={`${rating} out of 5 stars`}
+            >
+              {"★".repeat(rating)}
+              <span className="text-beige">{"★".repeat(5 - rating)}</span>
+            </p>
+          )}
           <blockquote className="text-sm leading-relaxed sm:text-base">
             {t.quote}
           </blockquote>
-          <figcaption className="mt-3 text-sm font-semibold lg:mt-4 lg:text-base">– {t.author}</figcaption>
+          <figcaption className="mt-3 text-sm font-semibold lg:mt-4 lg:text-base">
+            – {t.author}
+          </figcaption>
         </figure>
         <button
           onClick={() => step(1)}
           aria-label="Next testimonial"
-          className="rounded bg-orange px-3 py-2 font-bold text-white"
+          disabled={items.length < 2}
+          className="rounded bg-orange px-3 py-2 font-bold text-white disabled:opacity-40"
         >
           &rsaquo;
         </button>

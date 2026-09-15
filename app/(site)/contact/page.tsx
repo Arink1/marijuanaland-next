@@ -74,7 +74,7 @@ export default async function Contact() {
           </div>
         </div>
 
-        <ContactForm />
+        <ContactForm email={site.email} />
       </section>
     </>
   );

@@ -47,8 +47,8 @@ export default function DealsStrip({ tiles }: { tiles: DealTile[] }) {
       <div className="deals-row">
         {tiles.map((t, i) => (
           <Link
-            key={t.category}
-            href={t.href}
+            key={i}
+            href={t.href || "/shop"}
             className="deals-tile"
             aria-label={`${t.category}: ${t.staticLabel}`}
           >
