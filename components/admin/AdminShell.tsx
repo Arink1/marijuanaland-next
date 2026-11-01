@@ -12,7 +12,8 @@ export type TabKey =
   | "faqs"
   | "gallery"
   | "messages"
-  | "subscribers";
+  | "subscribers"
+  | "traffic";
 
 export const TAB_GROUPS: { title: string; tabs: { key: TabKey; label: string }[] }[] = [
   {
@@ -40,6 +41,10 @@ export const TAB_GROUPS: { title: string; tabs: { key: TabKey; label: string }[]
       { key: "messages", label: "Messages" },
       { key: "subscribers", label: "Signups" },
     ],
+  },
+  {
+    title: "Traffic",
+    tabs: [{ key: "traffic", label: "Visitors" }],
   },
 ];
 

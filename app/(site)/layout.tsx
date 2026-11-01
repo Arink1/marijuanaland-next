@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import AgeGate from "@/components/AgeGate";
 import PreviewBar from "@/components/PreviewBar";
 import SignupPopup from "@/components/SignupPopup";
+import TrackVisit from "@/components/TrackVisit";
 import { getContent } from "@/lib/content";
 import { todayInShop } from "@/lib/schedule";
 
@@ -28,6 +29,7 @@ export default async function SiteLayout({
       <Footer site={site} />
       <SignupPopup />
       <PreviewBar />
+      <TrackVisit />
     </>
   );
 }

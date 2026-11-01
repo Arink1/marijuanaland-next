@@ -7,6 +7,11 @@ import { getMessages, getSubscribers } from "@/lib/inbox";
 import { isPreLaunch } from "@/lib/launch";
 import { menuCategories } from "@/lib/site";
 import { isStoreConfigured } from "@/lib/supabase";
+import {
+  getTrafficSummary,
+  trafficRange,
+  TrafficNotInstalled,
+} from "@/lib/traffic";
 import AdminShell, { isTab } from "@/components/admin/AdminShell";
 import DealCardsEditor from "@/components/admin/DealCardsEditor";
 import GalleryEditor from "@/components/admin/GalleryEditor";
@@ -14,6 +19,7 @@ import { MessagesInbox, SubscribersList } from "@/components/admin/Inbox";
 import LaunchEditor from "@/components/admin/LaunchEditor";
 import NoticeEditor from "@/components/admin/NoticeEditor";
 import SectionEditor, { type FieldSpec } from "@/components/admin/SectionEditor";
+import Traffic from "@/components/admin/Traffic";
 
 // Always reflect the latest saved content for the owner.
 export const dynamic = "force-dynamic";
@@ -71,7 +77,7 @@ const SITE_FIELDS: FieldSpec[] = [
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; undone?: string; v?: string }>;
+  searchParams: Promise<{ tab?: string; undone?: string; v?: string; days?: string }>;
 }) {
   if (!(await isLoggedIn())) redirect("/admin/login");
 
@@ -87,10 +93,27 @@ export default async function AdminPage({
         error: e instanceof Error ? e.message : "Database request failed.",
       }),
     );
-  const [content, inbox, signups] = await Promise.all([
+  // Visitor counts are one database call, so only make it on their own tab.
+  const days = trafficRange(params.days);
+  const [content, inbox, signups, traffic] = await Promise.all([
     getAdminContent(),
     settle(getMessages()),
     settle(getSubscribers()),
+    tab === "traffic"
+      ? getTrafficSummary(days).then(
+          (summary) => ({ summary, notInstalled: false, error: undefined as string | undefined }),
+          (e: unknown) => ({
+            summary: null,
+            notInstalled: e instanceof TrafficNotInstalled,
+            error:
+              e instanceof TrafficNotInstalled
+                ? undefined
+                : e instanceof Error
+                  ? e.message
+                  : "Database request failed.",
+          }),
+        )
+      : Promise.resolve(null),
   ]);
   const { live, drafts, meta } = content;
   const messages = inbox.rows;
@@ -204,6 +227,17 @@ export default async function AdminPage({
       break;
     case "subscribers":
       body = <SubscribersList subscribers={subscribers} storeReady={signupsReady} />;
+      break;
+    case "traffic":
+      body = (
+        <Traffic
+          summary={traffic?.summary ?? null}
+          days={days}
+          storeReady={isStoreConfigured()}
+          notInstalled={traffic?.notInstalled ?? false}
+          error={traffic?.error}
+        />
+      );
       break;
   }
 

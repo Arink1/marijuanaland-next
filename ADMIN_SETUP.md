@@ -15,6 +15,8 @@ upload photos, or receive messages and signups.
    - `site_content` — one row per section (live value, draft, previous value)
    - `messages` — contact-form messages
    - `subscribers` — deal-list signups from the popup
+   - `page_views` — one row per visit to a page, for the Visitors tab, plus
+     the `traffic_summary` and `prune_page_views` functions it uses
    - the public `site-images` storage bucket for uploaded photos
 
    All tables have row level security on with no public policies. Only the
@@ -116,6 +118,8 @@ Sections:
   emailed to `ALERT_EMAIL` when Resend is configured.
 - **Signups** — deal-list signups from the popup, with spreadsheet download.
   Repeat signups from the same phone number are ignored.
+- **Visitors** — how many people are coming to the site and where from. See
+  "Visitor tracking" below.
 
 Photos are shrunk in the browser before upload (longest side 1600px), so
 phone photos upload quickly and the site stays fast. GIFs and SVGs are
@@ -132,11 +136,91 @@ from `lib/site.ts` on the live site.
 
 Free Supabase projects pause after about a week without database activity.
 `vercel.json` runs a daily cron at 12:00 UTC that calls `/api/keepalive`,
-which does one tiny read. If the project ever does pause, the public site
+which does one tiny read and trims `page_views` back to 400 days. If the
+project ever does pause, the public site
 keeps showing the defaults from `lib/site.ts`, the admin shows a "Can't reach
 the database" warning, and the project can be restored from the Supabase
 dashboard. Dates are judged in the
 shop's time zone (America/Detroit).
+
+## Visitor tracking
+
+The **Visitors** tab in `/admin` answers two questions: how many people are
+coming to the site, and where they came from. It needs no extra service, no
+account and no new environment variables — the counts live in the same
+Supabase project as everything else, and only the owner can see them.
+
+### How a visit is counted
+
+Every page the site serves posts one small record to `/api/track`, which
+writes a row to `page_views`. Each row holds the page, the visit's origin
+(a tidied-up name like "Google" or "Facebook"), the referring site's host,
+any `utm_*` tags on the link, the city and state Vercel's edge network
+reports, and whether the visitor was on a phone, tablet or computer.
+
+Three things are deliberately left out:
+
+- **No cookie and no IP address.** The `visitor` column is a hash of the
+  address and browser mixed with `ADMIN_SESSION_SECRET` and the date. It
+  counts one person once a day and becomes a different value tomorrow, and it
+  cannot be turned back into an address. Because nothing is stored on the
+  visitor's device and nothing identifies a person, the site needs no cookie
+  banner for this.
+- **Crawlers, link previewers and uptime checks.** They do not run the
+  tracking script, and a user-agent check in `lib/traffic.ts` catches any that
+  do.
+- **The owner's own visits**, while signed in to `/admin` in that browser.
+
+Where a visit came from is read once, from the first page of the tab, and
+carried on every later page of the same visit. Someone who arrives from a
+Facebook post and then looks at four pages counts as one Facebook visitor,
+not one Facebook visit plus three direct ones.
+
+### What the tab shows
+
+Pick 7, 30 or 90 days at the top; everything below follows that choice.
+
+- **Visitors / Visits / Page views / Pages per visit**, each with the change
+  against the same length of time before it. A *visit* ends when the tab
+  closes; a *visitor* is counted once a day however many times they come back.
+- **A bar per day.** The dark part of each bar is visitors, the lighter part
+  on top is their repeat page views.
+- **Where visitors came from** — Google, Facebook, Instagram, Weedmaps,
+  Direct, and so on, counted once per visit.
+- **Most visited pages** and **first page they landed on**.
+- **Where visitors are** — city and state, from the network only, so it is
+  often the nearest large town rather than the real one.
+- **Phone or computer**, **sites linking to you**, **campaign tags**.
+- **Busiest times of day** in Michigan time, for picking when to post a deal.
+- **Latest page views** — the last 20, and a green pill at the top when
+  someone is on the site right now.
+- **Download spreadsheet** — every row in the window, for Excel.
+
+### Tagging your own links
+
+To tell apart links you put out yourself, add `utm_source` (and optionally
+`utm_campaign`) to the address you share:
+
+```
+https://www.marijuanaland.com/?utm_source=facebook&utm_campaign=fall-deal
+https://www.marijuanaland.com/shop?utm_source=flyer&utm_campaign=qr-code
+```
+
+`utm_source=facebook` shows up as "Facebook", so a tagged post and an
+untagged click land in the same row. A few short names are mapped to friendlier
+ones (`fb`, `ig`, `gmb`, `sms`, `qr`); anything else is shown as typed, so keep
+them consistent.
+
+### Housekeeping
+
+A page view is a small row, and the daily keepalive cron deletes anything
+older than 400 days, so a year of history plus last autumn to compare against
+is always there. To keep more or less, change the default in
+`prune_page_views`.
+
+If the Visitors tab says the tables are not in the database yet, run
+[`supabase/schema.sql`](supabase/schema.sql) in the Supabase SQL editor again:
+it adds the traffic tables and functions and leaves everything else alone.
 
 ## Running the admin locally
 

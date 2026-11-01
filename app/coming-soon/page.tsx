@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import ComingSoonView from "@/components/ComingSoon";
 import PreviewBar from "@/components/PreviewBar";
+import TrackVisit from "@/components/TrackVisit";
 import { isLoggedIn } from "@/lib/auth";
 import { getContent } from "@/lib/content";
 import { currentTime, gateState, launchLabel } from "@/lib/launch";
@@ -34,6 +35,7 @@ export default async function ComingSoonPage() {
       <ComingSoonView launch={launch} site={site} now={now} />
       {/* "Preview on site" from the admin lands here; same bar as the rest of the site. */}
       <PreviewBar />
+      <TrackVisit />
     </>
   );
 }

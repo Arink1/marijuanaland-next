@@ -1,5 +1,6 @@
 import { isLoggedIn } from "@/lib/auth";
 import { formatPhone, getAllMessages, getAllSubscribers, toCsv } from "@/lib/inbox";
+import { getTrafficRows, trafficRange } from "@/lib/traffic";
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleString("en-US", { timeZone: "America/Detroit" });
@@ -9,7 +10,8 @@ export async function GET(request: Request) {
   if (!(await isLoggedIn())) {
     return new Response("Not signed in.", { status: 401 });
   }
-  const kind = new URL(request.url).searchParams.get("kind");
+  const query = new URL(request.url).searchParams;
+  const kind = query.get("kind");
 
   let csv: string;
   try {
@@ -34,6 +36,42 @@ export async function GET(request: Request) {
           r.email,
           r.message,
           r.read ? "yes" : "no",
+        ]),
+      );
+    } else if (kind === "traffic") {
+      const rows = await getTrafficRows(trafficRange(query.get("days") ?? undefined));
+      csv = toCsv(
+        [
+          "When",
+          "Day",
+          "Page",
+          "Came from",
+          "Referring site",
+          "utm_source",
+          "utm_medium",
+          "utm_campaign",
+          "City",
+          "Region",
+          "Country",
+          "Device",
+          "First page of visit",
+          "Visit id",
+        ],
+        rows.map((r) => [
+          fmt(r.created_at),
+          String(r.day).slice(0, 10),
+          r.path,
+          r.source,
+          r.referrer ?? "",
+          r.utm_source ?? "",
+          r.utm_medium ?? "",
+          r.utm_campaign ?? "",
+          r.city ?? "",
+          r.region ?? "",
+          r.country ?? "",
+          r.device,
+          r.entry ? "yes" : "no",
+          r.session,
         ]),
       );
     } else {
