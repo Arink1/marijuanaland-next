@@ -5,6 +5,7 @@ export type TabKey =
   | "dealTiles"
   | "deals"
   | "testimonials"
+  | "launch"
   | "notice"
   | "site"
   | "menuItems"
@@ -25,6 +26,7 @@ export const TAB_GROUPS: { title: string; tabs: { key: TabKey; label: string }[]
   {
     title: "Site",
     tabs: [
+      { key: "launch", label: "Coming soon page" },
       { key: "notice", label: "Hours notice" },
       { key: "site", label: "Promo & contact" },
       { key: "menuItems", label: "Shop menu" },
@@ -50,15 +52,21 @@ export function isTab(v: string | undefined): v is TabKey {
 export default function AdminShell({
   tab,
   storeReady,
+  dbError,
   unread,
   drafts,
+  preLaunch,
   children,
 }: {
   tab: TabKey;
   storeReady: boolean;
+  /** Set when the database is connected but could not be read. */
+  dbError?: string;
   unread: number;
   /** Sections with unpublished changes, for a dot on the tab. */
   drafts: string[];
+  /** Visitors currently see the coming-soon page. */
+  preLaunch: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -78,7 +86,7 @@ export default function AdminShell({
             target="_blank"
             className="rounded border border-olive px-4 py-2 text-sm font-semibold text-olive transition hover:bg-olive hover:text-white"
           >
-            View live site
+            {preLaunch ? "Preview site" : "View live site"}
           </Link>
           <form action={logout}>
             <button
@@ -90,6 +98,15 @@ export default function AdminShell({
           </form>
         </div>
       </header>
+
+      {storeReady && dbError && (
+        <p className="mb-5 rounded border border-orange/60 bg-cream px-4 py-3 text-sm text-stone-warm">
+          <strong className="font-bold text-orange-dark">Can&apos;t reach the database right now.</strong>{" "}
+          What you see below may be out of date, so saving is turned off. Wait a
+          minute and reload the page. If it keeps happening, the Supabase project
+          may be paused; restore it from the Supabase dashboard.
+        </p>
+      )}
 
       {!storeReady && (
         <p className="mb-5 rounded border border-gold/50 bg-cream px-4 py-3 text-sm text-stone-warm">

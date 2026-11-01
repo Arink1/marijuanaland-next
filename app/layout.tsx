@@ -11,17 +11,29 @@ const cabin = Cabin({ subsets: ["latin"], variable: "--font-cabin" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const archivo = Archivo({
   subsets: ["latin"],
-  weight: ["500", "700", "800"],
+  weight: ["500", "600", "700", "800"],
   variable: "--font-archivo",
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.marijuanaland.com"),
   title: {
     default: `${site.name} | ${site.tagline}`,
     template: `%s | ${site.name}`,
   },
   description: `${site.tagline}. Premium flower, cartridges, edibles, pre-rolls and concentrates in Germfask, Michigan.`,
-  icons: { icon: "/images/MarijuanaLand.png" },
+  openGraph: { siteName: site.name, type: "website" },
+};
+
+// Tells Google which logo belongs to the business (search results, knowledge panel).
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: site.name,
+  url: "https://www.marijuanaland.com",
+  logo: "https://www.marijuanaland.com/images/logo-emblem-512.png",
+  image: "https://www.marijuanaland.com/images/marijuanaland-share.jpg",
+  telephone: site.phoneHref.replace("tel:", ""),
 };
 
 export default function RootLayout({
@@ -32,6 +44,10 @@ export default function RootLayout({
       <body
         className={`${josefin.variable} ${cabin.variable} ${inter.variable} ${archivo.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
         {children}
       </body>
     </html>

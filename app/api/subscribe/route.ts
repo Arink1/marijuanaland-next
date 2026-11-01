@@ -19,8 +19,12 @@ export async function POST(request: Request) {
     await addSubscriber({ name: body.name, phone: body.phone, source: "popup" });
     return Response.json({ ok: true });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Could not save your signup.";
-    const status = /Please enter/.test(msg) ? 400 : 500;
-    return Response.json({ error: msg }, { status });
+    const msg = e instanceof Error ? e.message : "";
+    if (/^Please enter/.test(msg)) return Response.json({ error: msg }, { status: 400 });
+    console.error("subscribe failed:", msg);
+    return Response.json(
+      { error: "Sorry, we couldn't save your signup. Please try again in a minute." },
+      { status: 500 },
+    );
   }
 }

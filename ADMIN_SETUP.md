@@ -17,15 +17,27 @@ upload photos, or receive messages and signups.
    - `subscribers` — deal-list signups from the popup
    - the public `site-images` storage bucket for uploaded photos
 
-   All tables have row level security on with no public policies — only the
-   server, using the service role key, can read or write them.
-3. Go to **Project Settings → API** and copy:
-   - **Project URL** → `SUPABASE_URL`
-   - **service_role** secret → `SUPABASE_SERVICE_ROLE_KEY`
+   All tables have row level security on with no public policies. Only the
+   server, using the secret key, can read or write them. The file also grants
+   the tables to `service_role` explicitly, because projects created after
+   May 30, 2026 no longer do that automatically.
+3. Go to **Project Settings → API Keys** (tab *Publishable and secret API
+   keys*) and copy:
+   - **Project URL** (`https://<ref>.supabase.co`) → `SUPABASE_URL`
+   - the **Secret key** named `default` (starts with `sb_secret_`) →
+     `SUPABASE_SERVICE_ROLE_KEY`
 
-> The service role key bypasses row level security. It is only ever read on the
+   Don't use the publishable key. The legacy `service_role` key also works,
+   but Supabase is retiring legacy keys.
+
+> The secret key bypasses row level security. It is only ever read on the
 > server (`lib/supabase.ts`) and must never be added to a `NEXT_PUBLIC_*`
 > variable.
+
+Current project (created 10/6/2026): `marijuanaland`, ref
+East US (North Virginia), in the "Arink1's Org" Supabase account
+(free plan). It can be transferred to the client's own Supabase organization
+later from Project Settings → General.
 
 ## 2. Generate the login credentials
 
@@ -77,10 +89,21 @@ Sections:
 
 - **Today at the Shop** — the flip tiles. Optional show-from / show-until
   dates schedule a tile; **Duplicate** copies one.
-- **Deal cards** — the homepage photo cards. Photos are uploaded or picked from
-  a library; the first five cards live today fill the five layout slots, so
-  add a dated sale card at the top and it appears and disappears on its own.
+- **Deal cards** — the homepage photo cards, edited on a live picture of the
+  homepage (desktop or phone). Tap a card in the preview, change its photo,
+  title and deal in the panel, and the preview follows. The first five cards
+  live today fill the five layout slots; cards that are not showing (dated,
+  ended, or sixth and later) sit in a strip under the preview with the reason.
+  Drag cards, or use Earlier / Later, to reorder. Publishing is blocked while
+  a card has no photo.
 - **Reviews** — quotes with a star rating and a show/hide toggle.
+- **Coming soon page** — hides the whole site behind the holding page. One
+  switch, an optional "open automatically at" date and time (shop time; a
+  countdown shows until then and the site opens on its own), the three lines
+  of copy, quick-fill buttons for "Coming soon" and "Maintenance", and a live
+  preview. A signed-in owner always sees the real site, so "Preview site"
+  keeps working while the gate is on. The values shipped in `lib/launch.ts`
+  are used until the owner publishes this section.
 - **Hours notice** — a bright banner across the top of every page. One switch,
   a message, quick-fill buttons, and an optional date after which it hides
   itself.
@@ -95,7 +118,24 @@ Sections:
   Repeat signups from the same phone number are ignored.
 
 Photos are shrunk in the browser before upload (longest side 1600px), so
-phone photos upload quickly and the site stays fast. Dates are judged in the
+phone photos upload quickly and the site stays fast. GIFs and SVGs are
+uploaded as-is and must be under 4 MB (Vercel's upload cap is 4.5 MB).
+
+The site only reads the fields shown in the "Promo & contact" editor from
+the database. The shop name and tagline always come from `lib/site.ts`, and
+the directions link is built from the address.
+
+A section that was previewed but never published keeps showing the values
+from `lib/site.ts` on the live site.
+
+## Keeping the free Supabase project awake
+
+Free Supabase projects pause after about a week without database activity.
+`vercel.json` runs a daily cron at 12:00 UTC that calls `/api/keepalive`,
+which does one tiny read. If the project ever does pause, the public site
+keeps showing the defaults from `lib/site.ts`, the admin shows a "Can't reach
+the database" warning, and the project can be restored from the Supabase
+dashboard. Dates are judged in the
 shop's time zone (America/Detroit).
 
 ## Running the admin locally

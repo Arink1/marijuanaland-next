@@ -1,0 +1,171 @@
+/* CategoryIcon: product-category line icons with one calm micro-motion each.
+   Idle is static. Motion plays on focus-visible of a parent carrying
+   .mlCatHost (plus hover / press on devices that hover), once when a .mlCatPlay
+   list scrolls into view on touch screens, on tap (data-mlcat-tap, set by
+   CategoryIconPlay), and forever with .mlCat--demo. Every animation touches transform and opacity only. Each moving
+   part names its own animation in --mlcat-a so the triggers below stay generic. */
+
+.mlCat {
+  --mlcat-ease: cubic-bezier(.45, 0, .3, 1);
+  display: inline-block;
+  flex: none;
+  overflow: visible;
+  vertical-align: middle;
+  pointer-events: none;
+}
+
+/* transform-origin values below are viewBox units (24 x 24) */
+.mlCat__m { transform-box: view-box; }
+
+/* Accent fills. Hosts on an orange background add .mlCatOnOrange. */
+.mlCat__amber { fill: var(--mlcat-amber, #e7a129); stroke: none; }
+.mlCat__hot { fill: var(--mlcat-hot, #e16a40); stroke: none; }
+.mlCat__tint { fill: currentColor; fill-opacity: .22; stroke: none; }
+.mlCatOnOrange { --mlcat-hot: #fff4dd; --mlcat-amber: #ffdc91; }
+
+/* ---- flower: the leaf sways a little while glints catch the light ---- */
+.mlCat__leaf { --mlcat-a: mlCatTurn 2.2s var(--mlcat-ease) both; transform-origin: 12px 21px; }
+.mlCat__glint {
+  --mlcat-a: mlCatGlint 2.2s cubic-bezier(.2, .7, .3, 1) both;
+  fill: currentColor; stroke: none; opacity: 0; transform-origin: 0 0;
+}
+.mlCat__glint--b { --mlcat-d: .35s; }
+.mlCat__glint--c { --mlcat-d: .7s; }
+.mlCat__glint--d { --mlcat-d: 1.05s; }
+
+/* ---- pre-rolls: the tip catches, a thin wisp rises ---- */
+.mlCat__ember { --mlcat-a: mlCatEmber 2.4s var(--mlcat-ease) both; opacity: 0; transform-origin: 0 0; }
+.mlCat__wisp {
+  --mlcat-a: mlCatWisp 2.4s cubic-bezier(.3, .2, .4, 1) both;
+  opacity: 0; transform-origin: 19.3px 7.4px;
+}
+
+/* ---- cartridges: one soft vapor puff ---- */
+.mlCat__puff {
+  --mlcat-a: mlCatPuff 2.4s cubic-bezier(.25, .6, .35, 1) both;
+  fill: currentColor; fill-opacity: .42; stroke: none; opacity: 0; transform-origin: 12px 3.2px;
+}
+
+/* ---- concentrates: an amber drop forms on the tool and falls into the jar ---- */
+.mlCat__drop { --mlcat-a: mlCatDrip 2.6s var(--mlcat-ease) both; opacity: 0; transform-origin: 13.3px 5px; }
+.mlCat__ripple {
+  --mlcat-a: mlCatRipple 2.6s ease-out both;
+  fill: none; stroke: var(--mlcat-amber, #e7a129); stroke-width: 1.1;
+  opacity: 0; transform-origin: 13.3px 17.6px;
+}
+
+/* ---- edibles: the bar lifts off one corner and settles ---- */
+.mlCat__bar { --mlcat-a: mlCatTilt 2.2s var(--mlcat-ease) both; transform-origin: 5.6px 20.6px; }
+
+/* ---- topicals: a press of the pump, then a sheen across the bottle ---- */
+.mlCat__pump { --mlcat-a: mlCatPump 2.4s var(--mlcat-ease) both; }
+.mlCat__sheen { --mlcat-a: mlCatSheen 2.4s var(--mlcat-ease) both; opacity: 0; }
+
+/* ---- deals: the tag swings on its nail and comes to rest ---- */
+.mlCat__tag { --mlcat-a: mlCatSwing 2.4s ease-in-out both; transform-origin: 12px 2.4px; }
+
+/* ---- triggers ---- */
+/* touch: CategoryIconPlay sets data-mlcat-inview once; icons play in a wave */
+.mlCatPlay[data-mlcat-inview] .mlCat__m {
+  animation: var(--mlcat-a);
+  animation-delay: calc(var(--mlcat-stagger, 0s) + var(--mlcat-d, 0s));
+}
+.mlCatPlay li:nth-child(2) { --mlcat-stagger: .18s; }
+.mlCatPlay li:nth-child(3) { --mlcat-stagger: .36s; }
+.mlCatPlay li:nth-child(4) { --mlcat-stagger: .54s; }
+.mlCatPlay li:nth-child(5) { --mlcat-stagger: .72s; }
+.mlCatPlay li:nth-child(6) { --mlcat-stagger: .9s; }
+.mlCatPlay li:nth-child(7) { --mlcat-stagger: 1.08s; }
+.mlCatPlay li:nth-child(n + 8) { --mlcat-stagger: 1.26s; }
+
+.mlCatHost:focus-visible .mlCat__m,
+.mlCatHost[data-mlcat-tap] .mlCat__m,
+.mlCat--demo .mlCat__m {
+  animation: var(--mlcat-a);
+  animation-delay: var(--mlcat-d, 0s);
+}
+/* Hover/press only where a real pointer hovers: touch screens leave :hover stuck
+   on the last tapped item, which would keep the animation applied and block the
+   tap replay (data-mlcat-tap). */
+@media (hover: hover) {
+  .mlCatHost:hover .mlCat__m,
+  .mlCatHost:active .mlCat__m {
+    animation: var(--mlcat-a);
+    animation-delay: var(--mlcat-d, 0s);
+  }
+}
+.mlCat--demo .mlCat__m { animation-iteration-count: infinite; will-change: transform, opacity; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mlCat .mlCat__m { animation: none !important; }
+}
+
+/* ---- keyframes (0% and 100% are the idle pose, so one-shots end at rest) ---- */
+@keyframes mlCatTurn {
+  0% { transform: rotate(0); }
+  24% { transform: rotate(-7deg); }
+  54% { transform: rotate(5deg); }
+  78% { transform: rotate(-1.5deg); }
+  92%, 100% { transform: rotate(0); }
+}
+@keyframes mlCatGlint {
+  0% { opacity: 0; transform: scale(.2) rotate(-45deg); }
+  9% { opacity: 1; transform: scale(1) rotate(0); }
+  24%, 100% { opacity: 0; transform: scale(.3) rotate(35deg); }
+}
+@keyframes mlCatEmber {
+  0% { opacity: 0; transform: scale(.55); }
+  20% { opacity: 1; transform: scale(1.06); }
+  34% { opacity: .82; transform: scale(.95); }
+  50% { opacity: 1; transform: scale(1.03); }
+  70% { opacity: .9; transform: scale(1); }
+  90%, 100% { opacity: 0; transform: scale(.7); }
+}
+@keyframes mlCatWisp {
+  0%, 22% { opacity: 0; transform: translate(0, 1.6px) scale(.9, .6); }
+  42% { opacity: .85; transform: translate(.2px, -.4px) scale(1); }
+  80%, 100% { opacity: 0; transform: translate(.9px, -3.6px) scale(1.15, 1.1); }
+}
+@keyframes mlCatPuff {
+  0%, 14% { opacity: 0; transform: translate(0, 2.6px) scale(.35); }
+  38% { opacity: 1; transform: translate(0, 0) scale(.9); }
+  80%, 100% { opacity: 0; transform: translate(.5px, -3.2px) scale(1.3); }
+}
+@keyframes mlCatDrip {
+  0%, 6% { opacity: 0; transform: translateY(0) scale(.15); }
+  14% { opacity: 1; transform: translateY(0) scale(.35); }
+  44% { transform: translateY(0) scale(.85, .92); }
+  56% { transform: translateY(.3px) scale(.9, 1.12); animation-timing-function: cubic-bezier(.55, 0, .9, .5); }
+  70% { opacity: 1; transform: translateY(8.2px) scale(.8, 1.05); }
+  75%, 100% { opacity: 0; transform: translateY(8.8px) scale(1.15, .45); }
+}
+@keyframes mlCatRipple {
+  0%, 70% { opacity: 0; transform: scale(.3); }
+  77% { opacity: 1; transform: scale(.8); }
+  94%, 100% { opacity: 0; transform: scale(1.35); }
+}
+@keyframes mlCatTilt {
+  0% { transform: rotate(0); }
+  38% { transform: rotate(-8deg); }
+  72% { transform: rotate(0); }
+  82% { transform: rotate(-1.2deg); }
+  92%, 100% { transform: rotate(0); }
+}
+@keyframes mlCatPump {
+  0% { transform: translateY(0); }
+  12% { transform: translateY(1.2px); }
+  28%, 100% { transform: translateY(0); }
+}
+@keyframes mlCatSheen {
+  0%, 20% { opacity: 0; transform: translateX(0); }
+  34%, 62% { opacity: 1; }
+  78%, 100% { opacity: 0; transform: translateX(4.8px); }
+}
+@keyframes mlCatSwing {
+  0% { transform: rotate(0); }
+  16% { transform: rotate(9deg); }
+  38% { transform: rotate(-6deg); }
+  58% { transform: rotate(3.5deg); }
+  76% { transform: rotate(-1.4deg); }
+  90%, 100% { transform: rotate(0); }
+}

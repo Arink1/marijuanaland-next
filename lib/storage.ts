@@ -6,7 +6,10 @@ import { authHeaders, requireConfig, supabaseConfig } from "./supabase";
 
 export const BUCKET = "site-images";
 
-export const MAX_UPLOAD_BYTES = 6 * 1024 * 1024;
+// Vercel rejects function request bodies over 4.5 MB before our code runs,
+// so stay under that. Photos are shrunk in the browser first; this mainly
+// catches large GIFs and SVGs, which are uploaded as-is.
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 
 const EXT_FOR: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -57,7 +60,7 @@ export async function uploadImage(
   const ext = extensionFor(contentType);
   if (!ext) throw new Error("Only JPG, PNG, WebP, GIF or SVG images can be uploaded.");
   if (bytes.byteLength > MAX_UPLOAD_BYTES) {
-    throw new Error("That photo is too large. Please use one under 6 MB.");
+    throw new Error("That photo is too large. Please use one under 4 MB.");
   }
   const name = `${Date.now()}-${randomBytes(4).toString("hex")}.${ext}`;
   const res = await fetch(`${cfg.url}/storage/v1/object/${BUCKET}/${name}`, {

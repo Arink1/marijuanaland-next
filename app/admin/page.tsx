@@ -1,13 +1,17 @@
+import { Fragment } from "react";
 import { redirect } from "next/navigation";
 import { isLoggedIn } from "@/lib/auth";
 import { getAdminContent, type ContentKey } from "@/lib/content";
 import { isEmailConfigured } from "@/lib/email";
 import { getMessages, getSubscribers } from "@/lib/inbox";
+import { isPreLaunch } from "@/lib/launch";
 import { menuCategories } from "@/lib/site";
 import { isStoreConfigured } from "@/lib/supabase";
 import AdminShell, { isTab } from "@/components/admin/AdminShell";
+import DealCardsEditor from "@/components/admin/DealCardsEditor";
 import GalleryEditor from "@/components/admin/GalleryEditor";
 import { MessagesInbox, SubscribersList } from "@/components/admin/Inbox";
+import LaunchEditor from "@/components/admin/LaunchEditor";
 import NoticeEditor from "@/components/admin/NoticeEditor";
 import SectionEditor, { type FieldSpec } from "@/components/admin/SectionEditor";
 
@@ -27,13 +31,6 @@ const TILE_FIELDS: FieldSpec[] = [
   { name: "href", label: "Link", width: "sm", options: ["/shop", "/contact", "/faq", "/gallery", "/about-us"] },
   { name: "tone", label: "Colour", width: "xs", options: ["green", "accent"] },
   { name: "mark", label: "Icon", width: "xs", options: ["circle", "bars", "bar", "diamond", "dots", "pill"] },
-  ...SCHEDULE_FIELDS,
-];
-
-const DEAL_FIELDS: FieldSpec[] = [
-  { name: "image", label: "Photo", type: "image" },
-  { name: "title", label: "Title", width: "sm" },
-  { name: "text", label: "Text", width: "md" },
   ...SCHEDULE_FIELDS,
 ];
 
@@ -65,7 +62,8 @@ const SITE_FIELDS: FieldSpec[] = [
   { name: "phoneHref", label: "Phone (for tap-to-call)", width: "sm", hint: "tel:+1…" },
   { name: "email", label: "Email", width: "sm" },
   { name: "address", label: "Address", width: "lg" },
-  { name: "hours", label: "Hours (short)", width: "md" },
+  { name: "hours", label: "Hours (short)", width: "md", hint: "Header, footer and shop page" },
+  { name: "hoursDetail", label: "Hours (contact page)", width: "lg", type: "lines", hint: "One line per day range" },
   { name: "instagramHandle", label: "Instagram handle", width: "sm" },
   { name: "licenses", label: "Footer licence line", width: "lg" },
 ];
@@ -73,7 +71,7 @@ const SITE_FIELDS: FieldSpec[] = [
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; undone?: string }>;
+  searchParams: Promise<{ tab?: string; undone?: string; v?: string }>;
 }) {
   if (!(await isLoggedIn())) redirect("/admin/login");
 
@@ -81,12 +79,28 @@ export default async function AdminPage({
   const tab = isTab(params.tab) ? params.tab : "dealTiles";
   const flash = params.undone ? "Restored the previous version to the live site." : undefined;
 
-  const storeReady = isStoreConfigured();
-  const [{ live, drafts, meta }, messages, subscribers] = await Promise.all([
+  const settle = <T,>(p: Promise<T[]>) =>
+    p.then(
+      (rows) => ({ rows, error: undefined as string | undefined }),
+      (e: unknown) => ({
+        rows: [] as T[],
+        error: e instanceof Error ? e.message : "Database request failed.",
+      }),
+    );
+  const [content, inbox, signups] = await Promise.all([
     getAdminContent(),
-    getMessages(),
-    getSubscribers(),
+    settle(getMessages()),
+    settle(getSubscribers()),
   ]);
+  const { live, drafts, meta } = content;
+  const messages = inbox.rows;
+  const subscribers = signups.rows;
+  const dbError = content.error ?? inbox.error ?? signups.error;
+  // A failed content read shows repo defaults; never let the owner publish
+  // those over their real content. Inbox failures only lock the inbox tabs.
+  const storeReady = isStoreConfigured() && !content.error;
+  const inboxReady = isStoreConfigured() && !inbox.error;
+  const signupsReady = isStoreConfigured() && !signups.error;
   const unread = messages.filter((m) => !m.read).length;
   const draftKeys = Object.keys(drafts);
 
@@ -115,18 +129,10 @@ export default async function AdminPage({
       );
       break;
     case "deals":
-      body = (
-        <SectionEditor
-          section="deals"
-          title="Homepage deal cards"
-          description="The photo cards under the hero. The first five cards that are live today are shown, in this order. Add dates to a card to schedule a sale."
-          fields={DEAL_FIELDS}
-          previewPath="/"
-          rowLabel="card"
-          schedulable
-          {...pick("deals")}
-        />
-      );
+      body = <DealCardsEditor {...pick("deals")} />;
+      break;
+    case "launch":
+      body = <LaunchEditor {...pick("launch")} site={live.site} />;
       break;
     case "testimonials":
       body = (
@@ -191,19 +197,29 @@ export default async function AdminPage({
       body = (
         <MessagesInbox
           messages={messages}
-          storeReady={storeReady}
+          storeReady={inboxReady}
           emailReady={isEmailConfigured()}
         />
       );
       break;
     case "subscribers":
-      body = <SubscribersList subscribers={subscribers} storeReady={storeReady} />;
+      body = <SubscribersList subscribers={subscribers} storeReady={signupsReady} />;
       break;
   }
 
   return (
-    <AdminShell tab={tab} storeReady={storeReady} unread={unread} drafts={draftKeys}>
-      {body}
+    <AdminShell
+      tab={tab}
+      storeReady={isStoreConfigured()}
+      dbError={dbError}
+      unread={unread}
+      drafts={draftKeys}
+      preLaunch={isPreLaunch(live.launch)}
+    >
+      {/* Editors read their initial values once. Remount them when the tab, the
+          database state or the data underneath (Undo, Throw away) changes, so
+          stale values can't be published. */}
+      <Fragment key={`${tab}|${storeReady}|${params.v ?? ""}`}>{body}</Fragment>
     </AdminShell>
   );
 }

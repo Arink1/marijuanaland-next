@@ -1,7 +1,7 @@
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 
-const COOKIE = "ml_admin";
+export const COOKIE = "ml_admin";
 const MAX_AGE = 60 * 60 * 8; // 8 hours
 
 function safeEqual(a: string, b: string) {
@@ -68,10 +68,14 @@ export async function destroySession() {
   store.delete(COOKIE);
 }
 
+/** Checks a raw ml_admin cookie value. */
+export function isValidSession(token: string | undefined) {
+  return isAuthConfigured() && tokenValid(token);
+}
+
 export async function isLoggedIn() {
-  if (!isAuthConfigured()) return false;
   const store = await cookies();
-  return tokenValid(store.get(COOKIE)?.value);
+  return isValidSession(store.get(COOKIE)?.value);
 }
 
 /** Checks the submitted password against ADMIN_PASSWORD_HASH. */

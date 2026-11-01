@@ -1,0 +1,124 @@
+.bagAnim { position: relative; }
+
+.bagAnim__stage {
+  position: absolute; left: 0; top: 0; width: 500px; height: 500px;
+  transform: scale(var(--scale, 1)); transform-origin: top left;
+  font-family: var(--font-archivo), Archivo, system-ui, sans-serif;
+}
+
+/* products live behind the bag and are clipped at the bag's front top edge */
+.bagAnim__behind { position: absolute; inset: 0; z-index: 1; clip-path: inset(0 0 40.5% 0); }
+
+.bagAnim__bag {
+  position: absolute; left: 0; top: 0; width: 500px; height: 500px; z-index: 2;
+  animation: bagAnimBob var(--loop, 8s) ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ---- slots: position + the pop-out / retract motion ---- */
+.bagAnim__slot { position: absolute; will-change: transform, opacity; }
+.bagAnim__slot--left  { left: 78px;  top: 134px; width: 190px; height: 230px;
+  animation: bagAnimPopLeft  var(--loop, 8s) cubic-bezier(.34, 1.3, .5, 1) infinite; }
+.bagAnim__slot--mid   { left: 186px; top: 62px;  width: 190px; height: 230px;
+  animation: bagAnimPopMid   var(--loop, 8s) cubic-bezier(.34, 1.3, .5, 1) infinite; }
+.bagAnim__slot--right { left: 322px; top: 96px;  width: 150px; height: 230px;
+  animation: bagAnimPopRight var(--loop, 8s) cubic-bezier(.34, 1.3, .5, 1) infinite; }
+
+/* ---- 1. gummy tin (cream, orange lid) ---- */
+.bagAnim__tin {
+  position: relative; width: 104px; height: 104px; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 38% 32%, #FBF1DC 0%, #F3E4C6 55%, #DECBA3 100%);
+  box-shadow: 0 12px 24px rgba(60, 20, 10, .28), inset 0 -6px 12px rgba(120, 80, 40, .18);
+}
+.bagAnim__tinRing { position: absolute; inset: 7px; border-radius: 50%; border: 2px solid rgba(201, 92, 52, .55); }
+.bagAnim__tinLid  { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 66px; height: 66px; border-radius: 50%; background: #DC7243;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, .3); }
+.bagAnim__tinMark { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; }
+.bagAnim__tinTop    { position: absolute; left: 0; right: 0; top: 11px; text-align: center;
+  font-size: 8px; font-weight: 800; letter-spacing: .22em; color: #C95C34; }
+.bagAnim__tinBottom { position: absolute; left: 0; right: 0; bottom: 11px; text-align: center;
+  font-size: 6px; font-weight: 600; letter-spacing: .16em; color: #8A5A3C; }
+
+/* ---- 2. flower pouch (brand orange) ---- */
+.bagAnim__pouch {
+  position: relative; width: 120px; height: 158px; border-radius: 5px; overflow: hidden;
+  background: linear-gradient(105deg, #E5824F 0%, #DC7243 58%, #C95C34 100%);
+  box-shadow: 0 14px 28px rgba(60, 20, 10, .32);
+}
+.bagAnim__pouchSeal { position: absolute; inset: 0 0 auto 0; height: 20px; background: #C95C34; }
+.bagAnim__pouchHang { position: absolute; left: 50%; top: 6px; transform: translateX(-50%);
+  width: 30px; height: 8px; border-radius: 8px; background: rgba(60, 20, 10, .25); }
+.bagAnim__pouchMark { position: absolute; left: 50%; top: 32px; transform: translateX(-50%); width: 60px; height: 60px; }
+.bagAnim__pouchCopy { position: absolute; left: 0; right: 0; top: 101px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bagAnim__pouchTitle { font-size: 13px; font-weight: 800; letter-spacing: .2em; color: #F7E7CA; }
+.bagAnim__pouchSub   { font-size: 7.5px; font-weight: 600; letter-spacing: .12em; white-space: nowrap; color: rgba(247, 231, 202, .8); }
+.bagAnim__pouchWord  { position: absolute; left: 50%; bottom: 9px; transform: translateX(-50%); width: 46px; height: auto; }
+.bagAnim__pouchEdge  { position: absolute; right: 0; top: 0; bottom: 0; width: 18px;
+  background: linear-gradient(90deg, rgba(60, 20, 10, 0), rgba(60, 20, 10, .22)); }
+
+/* ---- 3. vape pen (deep green, cream cap, orange band) ---- */
+.bagAnim__pen {
+  position: relative; width: 34px; height: 152px; border-radius: 9px 9px 14px 14px; overflow: hidden;
+  background: linear-gradient(100deg, #4E6B3A 0%, #3C5630 55%, #2A3F22 100%);
+  box-shadow: 0 12px 22px rgba(20, 30, 15, .35);
+}
+.bagAnim__penCap  { position: absolute; inset: 0 0 auto 0; height: 28px; border-radius: 9px 9px 2px 2px; background: #F7E7CA; }
+.bagAnim__penBand { position: absolute; left: 0; right: 0; top: 34px; height: 34px; background: #DC7243; }
+.bagAnim__penMark { position: absolute; left: 50%; top: 39px; transform: translateX(-50%); width: 24px; height: 24px; }
+.bagAnim__penLabel { position: absolute; left: 50%; top: 108px; transform: translate(-50%, -50%) rotate(-90deg);
+  font-size: 9px; font-weight: 800; letter-spacing: .24em; white-space: nowrap; color: #F7E7CA; }
+.bagAnim__penLine { position: absolute; left: 7px; right: 7px; bottom: 12px; height: 2px; background: rgba(247, 231, 202, .35); }
+.bagAnim__penEdge { position: absolute; right: 0; top: 0; bottom: 0; width: 9px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, .3)); }
+
+/* ---- motion ----
+   Each product: hidden inside the bag → rises → hovers → drops back → hidden.
+   Sequential windows (tin 3–70%, flower 17–84%, pen 31–98%) make them leave one at
+   a time and return one at a time. Start and end states match, so the loop is seamless. */
+@keyframes bagAnimBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes bagAnimPopLeft {
+  0%, 3% { transform: translate(26px, 205px) rotate(-2deg) scale(.62); opacity: 0; }
+  5%  { transform: translate(24px, 150px) rotate(-4deg) scale(.7); opacity: 1; }
+  13% { transform: translate(0, -10px) rotate(-20deg) scale(1); opacity: 1; }
+  17% { transform: translate(0, 0) rotate(-17deg) scale(1); opacity: 1; }
+  36% { transform: translate(-3px, 8px) rotate(-14deg) scale(1); opacity: 1; }
+  54% { transform: translate(0, -2px) rotate(-18deg) scale(1); opacity: 1; }
+  58% { transform: translate(0, -8px) rotate(-19deg) scale(1); opacity: 1; }
+  68% { transform: translate(24px, 150px) rotate(-4deg) scale(.7); opacity: 1; }
+  70%, 100% { transform: translate(26px, 205px) rotate(-2deg) scale(.62); opacity: 0; }
+}
+@keyframes bagAnimPopMid {
+  0%, 17% { transform: translate(0, 255px) rotate(0deg) scale(.62); opacity: 0; }
+  19% { transform: translate(0, 190px) rotate(2deg) scale(.7); opacity: 1; }
+  27% { transform: translate(0, -14px) rotate(10deg) scale(1); opacity: 1; }
+  31% { transform: translate(0, 0) rotate(7deg) scale(1); opacity: 1; }
+  50% { transform: translate(2px, 9px) rotate(4deg) scale(1); opacity: 1; }
+  68% { transform: translate(0, -3px) rotate(8deg) scale(1); opacity: 1; }
+  72% { transform: translate(0, -10px) rotate(9deg) scale(1); opacity: 1; }
+  82% { transform: translate(0, 190px) rotate(2deg) scale(.7); opacity: 1; }
+  84%, 100% { transform: translate(0, 255px) rotate(0deg) scale(.62); opacity: 0; }
+}
+@keyframes bagAnimPopRight {
+  0%, 31% { transform: translate(-34px, 225px) rotate(4deg) scale(.62); opacity: 0; }
+  33% { transform: translate(-30px, 165px) rotate(6deg) scale(.7); opacity: 1; }
+  41% { transform: translate(0, -12px) rotate(26deg) scale(1); opacity: 1; }
+  45% { transform: translate(0, 0) rotate(22deg) scale(1); opacity: 1; }
+  62% { transform: translate(3px, 9px) rotate(18deg) scale(1); opacity: 1; }
+  82% { transform: translate(0, -2px) rotate(23deg) scale(1); opacity: 1; }
+  86% { transform: translate(0, -9px) rotate(24deg) scale(1); opacity: 1; }
+  96% { transform: translate(-30px, 165px) rotate(6deg) scale(.7); opacity: 1; }
+  98%, 100% { transform: translate(-34px, 225px) rotate(4deg) scale(.62); opacity: 0; }
+}
+
+/* motion-safe fallback: products rest outside the bag, nothing moves */
+@media (prefers-reduced-motion: reduce) {
+  .bagAnim__bag, .bagAnim__slot { animation: none !important; }
+  .bagAnim__slot--left  { transform: rotate(-17deg); }
+  .bagAnim__slot--mid   { transform: rotate(7deg); }
+  .bagAnim__slot--right { transform: rotate(22deg); }
+}

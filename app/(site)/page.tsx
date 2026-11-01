@@ -1,70 +1,26 @@
 import Link from "next/link";
 import Image from "next/image";
 import Testimonials from "@/components/Testimonials";
+import BagAnimation from "@/components/BagAnimation";
+import HeroSmoke from "@/components/fx/HeroSmoke";
+import { DEAL_SLOT_COUNT, DealCard, DealGrid } from "@/components/DealCard";
 import DealsStrip from "@/components/DealsStrip";
+import CategoryIcon from "@/components/fx/CategoryIcon";
+import CategoryIconPlay from "@/components/fx/CategoryIconPlay";
 import { categories, instagramImages } from "@/lib/site";
 import { getContent } from "@/lib/content";
 import { isLive, todayInShop } from "@/lib/schedule";
-
-// Mobile placement mirrors the original site: flower full-width, then
-// topicals + cartridges side by side, then pre-rolls and edibles full-width.
-const dealLayout = [
-  // topicals
-  "order-2 col-span-1 h-[190px] lg:order-none lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:h-[540px]",
-  // flower sale
-  "order-1 col-span-2 h-[162px] lg:order-none lg:col-start-2 lg:col-span-2 lg:row-start-1 lg:h-[250px]",
-  // pre-rolls
-  "order-4 col-span-2 h-[176px] lg:order-none lg:col-start-2 lg:col-span-1 lg:row-start-2 lg:h-[250px]",
-  // edible sale
-  "order-5 col-span-2 h-[162px] lg:order-none lg:col-start-3 lg:col-span-1 lg:row-start-2 lg:h-[250px]",
-  // cartridges
-  "order-3 col-span-1 h-[190px] lg:order-none lg:col-start-4 lg:row-start-1 lg:row-span-2 lg:h-[540px]",
-];
-
-function DealCard({
-  title,
-  text,
-  image,
-  className,
-}: {
-  title: string;
-  text: string;
-  image: string;
-  className: string;
-}) {
-  return (
-    <div className={`group relative overflow-hidden rounded-lg ${className}`}>
-      <Image
-        src={image}
-        alt={title}
-        fill
-        sizes="(max-width: 1024px) 50vw, 25vw"
-        className="object-cover transition duration-500 group-hover:scale-105"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 p-3 lg:p-5">
-        <h3 className="text-[22px] font-bold uppercase leading-tight tracking-brand text-gold">
-          {title}
-        </h3>
-        <p className="mt-1 text-xs text-white lg:text-sm">{text}</p>
-        <Link
-          href="/shop"
-          className="mt-2 inline-block rounded bg-orange px-4 py-1.5 font-(family-name:--font-josefin) text-xs font-bold text-white transition hover:bg-orange-dark lg:mt-3 lg:px-5 lg:py-2 lg:text-sm"
-        >
-          Shop Now
-        </Link>
-      </div>
-    </div>
-  );
-}
 
 export default async function Home() {
   const { site, deals, dealTiles, faqs, testimonials } = await getContent();
 
   // Scheduled deals: only what is live today (shop time). The card mosaic
-  // has five slots, so the first five live cards fill them in order.
+  // has five slots, so the first five live cards fill them in order. A card
+  // without a photo is skipped rather than breaking the page.
   const today = todayInShop();
-  const cards = deals.filter((d) => isLive(d, today)).slice(0, dealLayout.length);
+  const cards = deals
+    .filter((d) => d.image && isLive(d, today))
+    .slice(0, DEAL_SLOT_COUNT);
   const tiles = dealTiles.filter((t) => isLive(t, today));
   const reviews = testimonials.filter((t) => t.show !== false);
 
@@ -81,6 +37,7 @@ export default async function Home() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-black/30" />
+        <HeroSmoke />
         <div className="relative flex flex-col items-center px-4 text-center">
           <Image
             src="/images/Marijuana-Land-Badge2.gif"
@@ -108,38 +65,33 @@ export default async function Home() {
 
       {/* Category bar — horizontal scroll strip on mobile */}
       <nav className="border-b border-beige bg-cream">
-        <ul className="mx-auto flex h-12 max-w-5xl items-center gap-x-7 overflow-x-auto whitespace-nowrap px-4 [scrollbar-width:none] lg:h-auto lg:flex-wrap lg:justify-center lg:gap-x-8 lg:overflow-visible lg:py-4 [&::-webkit-scrollbar]:hidden">
-          {categories.map((c, idx) => (
-            <li key={c} className="shrink-0">
-              <Link
-                href="/shop"
-                className={`font-(family-name:--font-inter) text-sm font-medium ${
-                  idx === 0
-                    ? "border-b-2 border-orange text-orange"
-                    : "text-ink hover:text-orange"
-                }`}
-              >
-                {c}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <CategoryIconPlay>
+          <ul className="mx-auto flex h-12 max-w-5xl items-center gap-x-7 overflow-x-auto whitespace-nowrap px-4 [scrollbar-width:none] lg:h-auto lg:flex-wrap lg:justify-center lg:gap-x-8 lg:overflow-visible lg:py-4 [&::-webkit-scrollbar]:hidden">
+            {categories.map((c, idx) => (
+              <li key={c} className="shrink-0">
+                <Link
+                  href="/shop"
+                  className={`mlCatHost inline-flex items-center gap-1.5 align-top font-(family-name:--font-inter) text-sm font-medium ${
+                    idx === 0
+                      ? "border-b-2 border-orange text-orange"
+                      : "text-ink hover:text-orange"
+                  }`}
+                >
+                  <CategoryIcon category={c} />
+                  {c}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </CategoryIconPlay>
       </nav>
 
       {/* Deals grid */}
-      <section className="mx-auto max-w-7xl px-[15px] py-6 lg:px-4 lg:py-12">
-        <div className="grid grid-cols-2 gap-[9px] lg:grid-cols-4 lg:gap-5">
-          {cards.map((d, i) => (
-            <DealCard
-              key={i}
-              title={d.title}
-              text={d.text}
-              image={d.image}
-              className={dealLayout[i]}
-            />
-          ))}
-        </div>
-      </section>
+      <DealGrid>
+        {cards.map((d, i) => (
+          <DealCard key={i} title={d.title} text={d.text} image={d.image} slot={i} />
+        ))}
+      </DealGrid>
 
       {/* Today at the Shop — animated deals strip */}
       {tiles.length > 0 && <DealsStrip tiles={tiles} />}
@@ -165,14 +117,7 @@ export default async function Home() {
             our roots run deep in the rich, fertile soils that have produced
             some of the state&apos;s most celebrated brands.
           </p>
-          <Image
-            src="/images/unbranded-cannabis-bag.gif"
-            alt="Marijuana Land shopping bag"
-            width={360}
-            height={360}
-            unoptimized
-            className="mx-auto mt-4 h-[210px] w-[210px] lg:mt-6 lg:h-[360px] lg:w-[360px]"
-          />
+          <BagAnimation className="mx-auto mt-4 size-[210px] [--scale:0.42] lg:mt-6 lg:size-[360px] lg:[--scale:0.72]" />
           <Link
             href="/about-us"
             className="mt-4 inline-block rounded bg-orange px-8 py-2.5 font-(family-name:--font-josefin) font-bold text-white transition hover:bg-orange-dark lg:mt-6"

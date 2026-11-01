@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import SunburstMark from "@/components/fx/SunburstMark";
 
 export default function SignupPopup() {
   const [visible, setVisible] = useState(false);
@@ -77,6 +78,7 @@ export default function SignupPopup() {
         <div className="p-6 sm:p-8">
           {status === "sent" ? (
             <>
+              <SunburstMark mode="intro" size={44} className="mb-3 text-gold" />
               <h3 className="text-xl font-bold uppercase text-gold">
                 You&apos;re on the list!
               </h3>
@@ -131,7 +133,14 @@ export default function SignupPopup() {
                   disabled={status === "sending"}
                   className="w-full rounded bg-orange py-2.5 font-(family-name:--font-josefin) font-bold text-white transition hover:bg-orange-dark disabled:opacity-60"
                 >
-                  {status === "sending" ? "Signing up…" : "Sign Up"}
+                  {status === "sending" ? (
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <SunburstMark mode="spinner" size={18} />
+                      Signing up…
+                    </span>
+                  ) : (
+                    "Sign Up"
+                  )}
                 </button>
               </form>
               <p className="mt-3 text-[11px] leading-snug text-stone-warm/80">

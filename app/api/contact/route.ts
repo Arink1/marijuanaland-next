@@ -32,8 +32,12 @@ export async function POST(request: Request) {
     });
     return Response.json({ ok: true });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Could not send your message.";
-    const status = /Please fill/.test(msg) ? 400 : 500;
-    return Response.json({ error: msg }, { status });
+    const msg = e instanceof Error ? e.message : "";
+    if (/^Please fill/.test(msg)) return Response.json({ error: msg }, { status: 400 });
+    console.error("contact failed:", msg);
+    return Response.json(
+      { error: "Sorry, your message didn't go through. Please call us or try again in a minute." },
+      { status: 500 },
+    );
   }
 }

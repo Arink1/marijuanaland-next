@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import SunburstMark from "@/components/fx/SunburstMark";
 
 export default function AgeGate() {
   const [status, setStatus] = useState<"pending" | "allowed" | "denied">(
@@ -38,14 +39,13 @@ export default function AgeGate() {
       />
       <div className="absolute inset-0 bg-black/60" />
       <div className="relative mx-4 flex max-w-xl flex-col items-center text-center">
-        <Image
-          src="/images/Marijuana-Land-Badge2.gif"
-          alt="Marijuana Land"
-          width={120}
-          height={120}
-          className="mb-6"
-          unoptimized
-        />
+        <div
+          role="img"
+          aria-label="Marijuana Land"
+          className="mb-6 flex size-30 items-center justify-center rounded-full bg-olive-dark/70 shadow-[inset_0_0_0_1px_rgba(255,244,221,0.1)]"
+        >
+          <SunburstMark mode="intro" size={92} delay={0.1} />
+        </div>
         {status === "pending" ? (
           <>
             <h1 className="text-2xl font-medium uppercase tracking-brand text-gold sm:text-3xl">

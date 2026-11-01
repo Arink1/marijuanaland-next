@@ -24,6 +24,7 @@ export default function EditorFrame({
   meta,
   storeReady,
   flash,
+  problem,
   onReset,
   children,
 }: {
@@ -37,6 +38,8 @@ export default function EditorFrame({
   meta: SectionMeta;
   storeReady: boolean;
   flash?: string;
+  /** Something the owner must fix first; blocks Preview and Publish while set. */
+  problem?: string | null;
   onReset: () => void;
   children: React.ReactNode;
 }) {
@@ -52,6 +55,7 @@ export default function EditorFrame({
   const [previewing, setPreviewing] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const busy = publishing || undoing || previewing;
+  const blocked = !storeReady || busy || Boolean(problem);
 
   // Saves a draft, gets the Draft Mode cookie back, then opens the page.
   // The tab is opened synchronously in the click so popup blockers allow it.
@@ -132,7 +136,15 @@ export default function EditorFrame({
         </div>
       )}
 
-      <form action={publishAction} className="mt-5">
+      <form
+        action={publishAction}
+        className="mt-5"
+        onKeyDown={(e) => {
+          // Enter in a text box would submit (publish); only the button should.
+          const t = e.target as HTMLInputElement;
+          if (e.key === "Enter" && t.tagName === "INPUT" && t.type !== "file") e.preventDefault();
+        }}
+      >
         <input type="hidden" name="section" value={section} />
         <input type="hidden" name="payload" value={payload} />
 
@@ -143,7 +155,7 @@ export default function EditorFrame({
             <button
               type="button"
               onClick={preview}
-              disabled={!storeReady || busy}
+              disabled={blocked}
               className={btn.secondary}
               title="Opens the site in a new tab showing these changes. Only you can see them."
             >
@@ -151,7 +163,7 @@ export default function EditorFrame({
             </button>
             <button
               type="submit"
-              disabled={!storeReady || busy}
+              disabled={blocked}
               className={btn.primary}
             >
               {publishing ? "Publishing…" : "Publish to live site"}
@@ -182,6 +194,11 @@ export default function EditorFrame({
             </button>
           </div>
 
+          {problem && (
+            <p role="alert" className="mt-3 text-sm font-semibold text-orange-dark">
+              {problem}
+            </p>
+          )}
           {(pub.error || undo.error || previewError) && (
             <p role="alert" className="mt-3 text-sm font-semibold text-orange-dark">
               {pub.error || undo.error || previewError}

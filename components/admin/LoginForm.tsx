@@ -15,11 +15,12 @@ export default function LoginForm() {
       <div className="w-full max-w-sm rounded-lg border border-beige bg-white p-8 shadow-sm">
         <div className="mb-6 flex justify-center">
           <Image
-            src="/images/MarijuanaLand.png"
+            src="/images/Marijuana-Land-Badge2.gif"
             alt="Marijuana Land"
             width={96}
             height={96}
-            className="h-20 w-auto"
+            className="h-24 w-24"
+            unoptimized
           />
         </div>
         <h1 className="text-center text-xl font-bold uppercase tracking-brand text-olive">

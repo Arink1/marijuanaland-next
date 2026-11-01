@@ -10,7 +10,10 @@ import {
   type DealTile,
   type MenuItem,
 } from "./site";
+import { defaultLaunch, type Launch } from "./launch";
 import { authHeaders, rest, restJson, supabaseConfig } from "./supabase";
+
+export type { Launch };
 
 export type DealCard = {
   title: string;
@@ -44,6 +47,7 @@ export type SiteContent = {
   gallery: GalleryImage[];
   testimonials: Testimonial[];
   notice: Notice;
+  launch: Launch;
 };
 
 export const CONTENT_KEYS = [
@@ -55,6 +59,7 @@ export const CONTENT_KEYS = [
   "gallery",
   "testimonials",
   "notice",
+  "launch",
 ] as const;
 
 export type ContentKey = (typeof CONTENT_KEYS)[number];
@@ -62,6 +67,9 @@ export type ContentKey = (typeof CONTENT_KEYS)[number];
 export function isContentKey(k: string): k is ContentKey {
   return (CONTENT_KEYS as readonly string[]).includes(k);
 }
+
+/** Sections stored as one object; every other section is a list. */
+export const OBJECT_SECTIONS: readonly ContentKey[] = ["site", "notice", "launch"];
 
 /** Values shipped in the repo. Used until an owner publishes an override. */
 export const defaultContent: SiteContent = {
@@ -77,10 +85,11 @@ export const defaultContent: SiteContent = {
     show: true,
   })),
   notice: { enabled: false, message: "", until: "" },
+  launch: defaultLaunch,
 };
 
 /** Pages that render site content; revalidated after every publish. */
-export const SITE_PATHS = ["/", "/shop", "/faq", "/about-us", "/contact", "/gallery"];
+export const SITE_PATHS = ["/", "/shop", "/faq", "/about-us", "/contact", "/gallery", "/coming-soon"];
 export const CONTENT_TAG = "site-content";
 
 const TABLE = "site_content";
@@ -100,11 +109,76 @@ export type SectionMeta = {
   publishedAt: string | null;
 };
 
+/**
+ * Fields of the "site" section the owner can edit in /admin. Only these are
+ * taken from the database; everything else (name, tagline, directions link)
+ * always comes from lib/site.ts so code changes keep showing up.
+ */
+export const SITE_EDITABLE = [
+  "promo",
+  "phone",
+  "phoneHref",
+  "email",
+  "address",
+  "hours",
+  "hoursDetail",
+  "instagramHandle",
+  "licenses",
+] as const;
+
+function mergeSite(stored: unknown): SiteInfo {
+  const src = (stored ?? {}) as Record<string, unknown>;
+  const site: SiteInfo = { ...defaultSite };
+  for (const k of SITE_EDITABLE) {
+    const v = src[k];
+    if (k === "hoursDetail") {
+      if (Array.isArray(v)) {
+        const lines = v.map((l) => String(l ?? "").trim()).filter(Boolean);
+        if (lines.length) site.hoursDetail = lines;
+      }
+    } else if (typeof v === "string") {
+      site[k] = v;
+    }
+  }
+  site.directionsUrl = `https://www.google.com/maps/dir//${encodeURIComponent(site.address)}`;
+  return site;
+}
+
+/**
+ * Coerces a stored launch row to the exact shape the gate expects. A row that
+ * is missing the switch fails open (site visible) rather than locking the
+ * site behind the holding page.
+ */
+function mergeLaunch(stored: unknown): Launch {
+  const src = (stored ?? {}) as Record<string, unknown>;
+  const text = (k: keyof Launch, fallback: string) =>
+    typeof src[k] === "string" ? (src[k] as string) : fallback;
+  return {
+    enabled: src.enabled === true,
+    launchAt: text("launchAt", ""),
+    eyebrow: text("eyebrow", defaultLaunch.eyebrow),
+    headline: text("headline", defaultLaunch.headline),
+    message: text("message", defaultLaunch.message),
+  };
+}
+
+/** Per-section clean-up applied to anything read from the database. */
+function clean(key: ContentKey, v: unknown): unknown {
+  if (key === "site") return mergeSite(v);
+  if (key === "launch") return mergeLaunch(v);
+  return v;
+}
+
 function merge(rows: Row[], pick: (r: Row) => unknown): SiteContent {
   const merged: SiteContent = { ...defaultContent };
   for (const row of rows) {
     const v = pick(row);
-    if (isContentKey(row.key) && v != null) {
+    if (!isContentKey(row.key) || v == null) continue;
+    if (row.key === "site") {
+      merged.site = mergeSite(v);
+    } else if (row.key === "launch") {
+      merged.launch = mergeLaunch(v);
+    } else {
       // @ts-expect-error key is validated above
       merged[row.key] = v;
     }
@@ -146,6 +220,8 @@ export async function getAdminContent(): Promise<{
   live: SiteContent;
   drafts: Partial<SiteContent>;
   meta: Record<ContentKey, SectionMeta>;
+  /** Set when the database could not be read; the editor must not save. */
+  error?: string;
 }> {
   const meta = Object.fromEntries(
     CONTENT_KEYS.map((k) => [
@@ -162,8 +238,13 @@ export async function getAdminContent(): Promise<{
       `${TABLE}?select=key,value,draft,previous,updated_at,published_at`,
       { cache: "no-store" },
     );
-  } catch {
-    return { live: defaultContent, drafts: {}, meta };
+  } catch (e) {
+    return {
+      live: defaultContent,
+      drafts: {},
+      meta,
+      error: e instanceof Error ? e.message : "Database request failed.",
+    };
   }
 
   const drafts: Partial<SiteContent> = {};
@@ -175,8 +256,10 @@ export async function getAdminContent(): Promise<{
       publishedAt: r.published_at,
     };
     if (r.draft != null) {
+      // Same layering as the live site, so a stored draft can't freeze
+      // fields the owner can't edit.
       // @ts-expect-error key validated above
-      drafts[r.key] = r.draft;
+      drafts[r.key] = clean(r.key, r.draft);
     }
   }
   return { live: merge(rows, (r) => r.value), drafts, meta };
@@ -207,7 +290,9 @@ export async function saveDraft(key: ContentKey, value: unknown) {
   const cur = await fetchRow(key);
   await upsert({
     key,
-    value: cur?.value ?? defaultContent[key],
+    // No live override yet: keep it null so the site keeps using lib/site.ts
+    // instead of freezing today's defaults into the database.
+    value: cur?.value ?? null,
     draft: value,
     updated_at: new Date().toISOString(),
   });
@@ -256,7 +341,7 @@ export async function publishAllDrafts(): Promise<ContentKey[]> {
     await upsert({
       key: r.key,
       value: r.draft,
-      previous: r.value,
+      previous: r.value ?? defaultContent[r.key],
       draft: null,
       updated_at: now,
       published_at: now,
@@ -266,9 +351,15 @@ export async function publishAllDrafts(): Promise<ContentKey[]> {
   return done;
 }
 
-/** Throws away the draft for a section. */
+/** Throws away the draft for a section. The live value is left alone. */
 export async function discardDraft(key: ContentKey) {
-  const cur = await fetchRow(key);
-  if (!cur) return;
-  await upsert({ key, draft: null, updated_at: new Date().toISOString() });
+  const res = await rest(`${TABLE}?key=eq.${key}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify({ draft: null, updated_at: new Date().toISOString() }),
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new Error(`Discard failed (${res.status}): ${await res.text()}`);
+  }
 }

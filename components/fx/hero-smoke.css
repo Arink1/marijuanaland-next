@@ -1,0 +1,165 @@
+/* HeroSmoke: see components/fx/HeroSmoke.tsx.
+   Loops animate transform + opacity only. The SVG inside each layer is static,
+   so the browser paints it once and the compositor does the moving. */
+
+.mlSmoke {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* thin the smoke behind the badge, headline and button; full at edges and bottom */
+  -webkit-mask-image: radial-gradient(ellipse 46% 32% at 50% 50%, rgb(0 0 0 / 0.3) 0%, rgb(0 0 0 / 0.45) 55%, #000 100%);
+  mask-image: radial-gradient(ellipse 46% 32% at 50% 50%, rgb(0 0 0 / 0.3) 0%, rgb(0 0 0 / 0.45) 55%, #000 100%);
+}
+
+.mlSmoke__wisp {
+  position: absolute;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.mlSmoke__curl {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  animation: mlSmokeCurl0 var(--c0, 31s) ease-in-out var(--d0, -9s) infinite alternate;
+  transform-origin: 25% 95%;
+}
+.mlSmoke__curl--1 {
+  animation: mlSmokeCurl1 var(--c1, 23s) ease-in-out var(--d1, -14s) infinite alternate;
+  transform-origin: 45% 100%;
+}
+.mlSmoke__curl svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ---- placement + timing. Durations differ and delays are negative, so the
+   scene is already mid-drift on first paint and the wisps never line up. ---- */
+.mlSmoke__wisp--a {
+  left: -5%;
+  bottom: -9%;
+  width: clamp(300px, 50%, 720px);
+  animation: mlSmokeDriftA 64s linear -22s infinite, mlSmokeFadeA 64s ease-in-out -22s infinite;
+  --c0: 31s; --d0: -9s; --c1: 23s; --d1: -14s;
+}
+.mlSmoke__wisp--b {
+  right: -6%;
+  bottom: -11%;
+  width: clamp(300px, 48%, 700px);
+  animation: mlSmokeDriftB 76s linear -51s infinite, mlSmokeFadeB 76s ease-in-out -51s infinite;
+  --c0: 37s; --d0: -20s; --c1: 27s; --d1: -5s;
+}
+.mlSmoke__wisp--c {
+  left: -2%;
+  top: 6%;
+  width: clamp(190px, 25%, 360px);
+  animation: mlSmokeDriftC 52s linear -9s infinite, mlSmokeFadeC 52s ease-in-out -9s infinite;
+  --c0: 29s; --d0: -17s; --c1: 21s; --d1: -3s;
+}
+.mlSmoke__wisp--d {
+  right: 1%;
+  top: -3%;
+  width: clamp(240px, 33%, 470px);
+  animation: mlSmokeDriftD 70s linear -38s infinite, mlSmokeFadeD 70s ease-in-out -38s infinite;
+  --c0: 41s; --d0: -26s; --c1: 25s; --d1: -11s;
+}
+.mlSmoke__wisp--e {
+  left: 18%;
+  bottom: -3%;
+  width: 64%;
+  animation: mlSmokeDriftE 80s linear -61s infinite, mlSmokeFadeE 80s ease-in-out -61s infinite;
+  --c0: 35s; --d0: -4s; --c1: 33s; --d1: -19s;
+}
+
+/* phones: three wisps, kept above and below the headline block */
+@media (max-width: 639px) {
+  .mlSmoke {
+    -webkit-mask-image: radial-gradient(ellipse 62% 30% at 50% 50%, rgb(0 0 0 / 0.3) 0%, rgb(0 0 0 / 0.45) 55%, #000 100%);
+    mask-image: radial-gradient(ellipse 62% 30% at 50% 50%, rgb(0 0 0 / 0.3) 0%, rgb(0 0 0 / 0.45) 55%, #000 100%);
+  }
+  .mlSmoke__wisp--a { left: -18%; bottom: -6%; width: 330px; }
+  .mlSmoke__wisp--b { right: -22%; bottom: -9%; width: 320px; }
+  .mlSmoke__wisp--c { left: -10%; top: -10%; width: 200px; }
+  .mlSmoke__wisp--d,
+  .mlSmoke__wisp--e { display: none; }
+}
+
+/* ---- motion ----
+   Drift: one slow linear pass (rise + lateral travel + slight growth).
+   Fade: in, a gentle dip, back up, out. It reaches 0 exactly where the drift
+   loops, so the jump back to the start is never visible. */
+@keyframes mlSmokeDriftA {
+  from { transform: translate3d(-7%, 9%, 0) rotate(-2deg) scale(0.95); }
+  to   { transform: translate3d(10%, -13%, 0) rotate(3deg) scale(1.1); }
+}
+@keyframes mlSmokeDriftB {
+  from { transform: translate3d(8%, 10%, 0) rotate(2deg) scale(0.94); }
+  to   { transform: translate3d(-11%, -12%, 0) rotate(-3deg) scale(1.08); }
+}
+@keyframes mlSmokeDriftC {
+  from { transform: translate3d(-4%, 10%, 0) rotate(-1deg) scale(0.96); }
+  to   { transform: translate3d(8%, -12%, 0) rotate(4deg) scale(1.08); }
+}
+@keyframes mlSmokeDriftD {
+  from { transform: translate3d(9%, 4%, 0) rotate(1deg) scale(0.97); }
+  to   { transform: translate3d(-14%, -8%, 0) rotate(-2deg) scale(1.06); }
+}
+@keyframes mlSmokeDriftE {
+  from { transform: translate3d(-9%, 6%, 0) scale(0.98); }
+  to   { transform: translate3d(9%, -10%, 0) scale(1.05); }
+}
+
+@keyframes mlSmokeFadeA {
+  0%, 100% { opacity: 0; }
+  18% { opacity: 0.24; }
+  46% { opacity: 0.15; }
+  72% { opacity: 0.22; }
+}
+@keyframes mlSmokeFadeB {
+  0%, 100% { opacity: 0; }
+  22% { opacity: 0.22; }
+  52% { opacity: 0.26; }
+  78% { opacity: 0.16; }
+}
+@keyframes mlSmokeFadeC {
+  0%, 100% { opacity: 0; }
+  25% { opacity: 0.2; }
+  55% { opacity: 0.12; }
+  76% { opacity: 0.18; }
+}
+@keyframes mlSmokeFadeD {
+  0%, 100% { opacity: 0; }
+  30% { opacity: 0.16; }
+  60% { opacity: 0.1; }
+  80% { opacity: 0.15; }
+}
+@keyframes mlSmokeFadeE {
+  0%, 100% { opacity: 0; }
+  28% { opacity: 0.16; }
+  58% { opacity: 0.2; }
+  82% { opacity: 0.12; }
+}
+
+/* Curl: two sub-layers sway against each other, which reads as the smoke folding. */
+@keyframes mlSmokeCurl0 {
+  from { transform: rotate(-1.6deg) skewX(1.8deg) scale(1); }
+  to   { transform: rotate(1.4deg) skewX(-1.4deg) scale(1.04); }
+}
+@keyframes mlSmokeCurl1 {
+  from { transform: translate3d(-1%, 0.6%, 0) rotate(1.6deg) skewY(-1deg); }
+  to   { transform: translate3d(1%, -1.4%, 0) rotate(-1.6deg) skewY(1deg); }
+}
+
+/* still pose: every wisp at rest in its designed spot */
+@media (prefers-reduced-motion: reduce) {
+  .mlSmoke__wisp,
+  .mlSmoke__curl { animation: none; will-change: auto; }
+  .mlSmoke__wisp--a { opacity: 0.22; }
+  .mlSmoke__wisp--b { opacity: 0.2; }
+  .mlSmoke__wisp--c { opacity: 0.16; }
+  .mlSmoke__wisp--d { opacity: 0.13; }
+  .mlSmoke__wisp--e { opacity: 0.14; }
+}

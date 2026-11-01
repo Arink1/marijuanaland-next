@@ -1,14 +1,14 @@
 export const site = {
   name: "Marijuana Land",
   tagline: "The Upper Peninsula's Premier Cannabis Dispensary",
-  phone: "(954) 444-6660",
-  phoneHref: "tel:+19544446660",
+  phone: "+1 (906) 291-3440",
+  phoneHref: "tel:+19062913440",
   email: "info@marijuanaland.com",
   address: "1204 W US HWY 2, Germfask MI 49836",
-  hours: "9am – 9pm | Open Daily",
+  hours: "Mon – Wed 9AM – 6PM | Thu – Fri 9AM – 9PM",
   hoursDetail: [
-    "Monday – Friday: 9:00A – 9:00P",
-    "Saturday – Sunday: 10:00A – 10:00P",
+    "Monday – Wednesday: 9:00A – 6:00P",
+    "Thursday – Friday: 9:00A – 9:00P",
   ],
   directionsUrl:
     "https://www.google.com/maps/dir//1204%20W%20US%20HWY%202%20Germfask%20MI%2049836",

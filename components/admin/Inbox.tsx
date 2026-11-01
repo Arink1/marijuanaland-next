@@ -111,7 +111,10 @@ export function SubscribersList({
         <div>
           <h2 className="text-lg font-bold uppercase tracking-brand text-olive">Deal-list signups</h2>
           <p className="mt-1 text-sm text-stone-warm">
-            People who signed up for text deals through the popup. {subscribers.length} total.
+            People who signed up for text deals through the popup.{" "}
+            {subscribers.length >= 1000
+              ? "Showing the newest 1,000; the spreadsheet download has everyone."
+              : `${subscribers.length} total.`}
           </p>
         </div>
         {subscribers.length > 0 && (

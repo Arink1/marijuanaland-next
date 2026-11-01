@@ -12,6 +12,7 @@ import {
 } from "@/lib/auth";
 import {
   CONTENT_TAG,
+  OBJECT_SECTIONS,
   SITE_PATHS,
   discardDraft,
   isContentKey,
@@ -69,7 +70,7 @@ function readSection(formData: FormData): ContentKey | null {
 
 function readPayload(key: ContentKey, formData: FormData): unknown {
   const parsed: unknown = JSON.parse(String(formData.get("payload") ?? ""));
-  const expectsArray = key !== "site" && key !== "notice";
+  const expectsArray = !OBJECT_SECTIONS.includes(key);
   if (expectsArray ? !Array.isArray(parsed) : typeof parsed !== "object" || !parsed) {
     throw new Error("Could not read the submitted values.");
   }
@@ -109,7 +110,8 @@ export async function undoPublish(
     return { error: e instanceof Error ? e.message : "Undo failed." };
   }
   refreshSite();
-  redirect(`/admin?tab=${key}&undone=1`);
+  // `v` forces the editor to remount with the restored values.
+  redirect(`/admin?tab=${key}&undone=1&v=${Date.now()}`);
 }
 
 /** Throws away unpublished changes for a section. */
@@ -118,7 +120,7 @@ export async function discardChanges(formData: FormData) {
   const key = readSection(formData);
   if (!key) return;
   await discardDraft(key);
-  redirect(`/admin?tab=${key}`);
+  redirect(`/admin?tab=${key}&v=${Date.now()}`);
 }
 
 function safePath(raw: unknown): string {

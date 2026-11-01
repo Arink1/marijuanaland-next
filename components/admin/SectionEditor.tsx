@@ -14,7 +14,8 @@ export type FieldSpec = {
   hint?: string;
   options?: string[];
   multiline?: boolean;
-  type?: "text" | "image" | "date" | "toggle" | "rating";
+  /** "lines": a string[] edited as a textarea, one entry per line. */
+  type?: "text" | "image" | "date" | "toggle" | "rating" | "lines";
 };
 
 type Row = Record<string, unknown>;
@@ -32,7 +33,9 @@ function blankRow(fields: FieldSpec[]): Row {
   return Object.fromEntries(
     fields.map((f) => [
       f.name,
-      f.type === "toggle"
+      f.type === "lines"
+        ? []
+        : f.type === "toggle"
         ? true
         : f.type === "rating"
           ? 5
@@ -237,6 +240,13 @@ export default function SectionEditor({
                           <option key={o} value={o}>{o}</option>
                         ))}
                       </select>
+                    ) : f.type === "lines" ? (
+                      <textarea
+                        value={Array.isArray(v) ? v.map(str).join("\n") : str(v)}
+                        onChange={(e) => update(i, f.name, e.target.value.split("\n"))}
+                        rows={3}
+                        className={input}
+                      />
                     ) : f.multiline ? (
                       <textarea value={str(v)} onChange={(e) => update(i, f.name, e.target.value)} rows={3} className={input} />
                     ) : (

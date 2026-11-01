@@ -1,0 +1,113 @@
+/* SunburstMark. Loops animate transform/opacity only; the ring draw-in is a one-shot intro. */
+
+/* Defaults live in a layer so Tailwind text-* utilities on the svg win. */
+@layer components {
+  .sbm { color: #fff4dd; }
+  .sbm--spinner { color: inherit; }
+}
+
+.sbm { pointer-events: none; overflow: visible; }
+
+.sbm__ray    { transform-box: fill-box; transform-origin: 0 50%; }      /* ray base = sun centre */
+.sbm__hub    { transform-box: fill-box; transform-origin: 50% 34.18%; } /* sun centre inside the clipped disc */
+.sbm__core   { transform-origin: 50px 50px; }
+.sbm__sprout { transform-origin: 50px 38.6px; }                          /* where the leaf meets its ground */
+.sbm__blade  { transform-origin: 50px 36.2px; }                          /* leaflet junction */
+.sbm__blade--sl { --fold: 24deg; }
+.sbm__blade--sr { --fold: -24deg; }
+.sbm__blade--fl { --fold: 34deg; }
+.sbm__blade--fr { --fold: -34deg; }
+
+/* ---- intro: ring draws up from the horizon, sun ignites, rays extend centre-out,
+   leaf rises and opens; then hands over to the idle loop ---- */
+.sbm--intro .sbm__arc {
+  stroke-dasharray: 1 1;
+  animation: sbmDraw 1s cubic-bezier(.65, 0, .35, 1) var(--sbm-delay, 0s) both;
+}
+.sbm--intro .sbm__hub {
+  animation: sbmHubIn .8s cubic-bezier(.22, 1, .36, 1) calc(var(--sbm-delay, 0s) + .1s) both;
+}
+.sbm--intro .sbm__ray {
+  animation:
+    sbmRayIn .8s cubic-bezier(.22, 1, .36, 1) calc(var(--sbm-delay, 0s) + .35s + var(--r) * .12s) both,
+    sbmShimmer 7s ease-in-out calc(var(--sbm-delay, 0s) + 2.2s + var(--i) * .2s) infinite;
+}
+.sbm--intro .sbm__sprout {
+  animation:
+    sbmRise 1s cubic-bezier(.22, 1, .36, 1) calc(var(--sbm-delay, 0s) + 1s) both,
+    sbmBreathe 7s ease-in-out calc(var(--sbm-delay, 0s) + 2.2s) infinite;
+}
+.sbm--intro .sbm__blade {
+  animation: sbmUnfurl 1.1s cubic-bezier(.22, 1, .36, 1) calc(var(--sbm-delay, 0s) + 1s) both;
+}
+.sbm--intro .sbm__blade--c { animation-name: sbmGrow; }
+
+/* ---- idle: a slow left-to-right shimmer across the rays, the leaf breathes ---- */
+.sbm--idle .sbm__ray {
+  animation: sbmShimmer 7s ease-in-out calc(var(--sbm-delay, 0s) + var(--i) * .2s) infinite;
+}
+.sbm--idle .sbm__sprout {
+  animation: sbmBreathe 7s ease-in-out var(--sbm-delay, 0s) infinite;
+}
+.sbm--intro .sbm__ray, .sbm--intro .sbm__sprout,
+.sbm--idle .sbm__ray, .sbm--idle .sbm__sprout { will-change: transform, opacity; }
+
+/* ---- spinner: light orbits the fan clockwise (10 slots; 3 fall behind the leaf).
+   Slightly heavier strokes so it survives 16-20px. ---- */
+.sbm--spinner .sbm__core { transform: scale(.93); }
+.sbm--spinner .sbm__arc { stroke-width: 4.6px; }
+.sbm--spinner .sbm__sprout { stroke: currentColor; stroke-width: .8px; stroke-linejoin: round; }
+.sbm--spinner .sbm__ray {
+  stroke: currentColor;
+  stroke-width: 1.2px;
+  will-change: opacity;
+  animation: sbmPulse 1.1s linear calc((var(--s) / 10 - 1) * 1.1s) infinite;
+}
+
+@keyframes sbmDraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes sbmHubIn {
+  from { opacity: 0; transform: scale(.4); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes sbmRayIn {
+  from { opacity: 0; transform: scaleX(.3); }
+  40%  { opacity: 1; }
+  to   { opacity: 1; transform: scaleX(1); }
+}
+@keyframes sbmRise {
+  from { opacity: 0; transform: translateY(6px) scale(.9); }
+  50%  { opacity: 1; }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes sbmUnfurl {
+  from { transform: rotate(var(--fold)); }
+  to   { transform: none; }
+}
+@keyframes sbmGrow {
+  from { transform: scaleY(.72); }
+  to   { transform: none; }
+}
+@keyframes sbmShimmer {
+  0%, 34%, 100% { opacity: 1; transform: scaleX(1); }
+  10% { opacity: .68; transform: scaleX(.975); }
+  21% { opacity: 1; transform: scaleX(1.035); }
+}
+@keyframes sbmBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+@keyframes sbmPulse {
+  0% { opacity: 1; }
+  70%, 100% { opacity: .22; }
+}
+
+/* reduced motion: the finished mark, no movement. The spinner keeps a frozen
+   clockwise fade so it still reads as "in progress". */
+@media (prefers-reduced-motion: reduce) {
+  .sbm * { animation: none !important; will-change: auto !important; }
+  .sbm--intro .sbm__arc { stroke-dasharray: none; }
+  .sbm--spinner .sbm__ray { opacity: calc(.3 + var(--s) * .115); }
+}

@@ -6,6 +6,7 @@ import SignupPopup from "@/components/SignupPopup";
 import { getContent } from "@/lib/content";
 import { todayInShop } from "@/lib/schedule";
 
+// The coming-soon / maintenance gate is in template.tsx next to this file.
 export default async function SiteLayout({
   children,
 }: {

@@ -6,6 +6,8 @@ import Link from "next/link";
 import { menuCategories } from "@/lib/site";
 import type { MenuItem } from "@/lib/site";
 import type { SiteInfo } from "@/lib/content";
+import CategoryIcon from "@/components/fx/CategoryIcon";
+import CategoryIconPlay from "@/components/fx/CategoryIconPlay";
 
 const ALL = "All";
 
@@ -36,25 +38,26 @@ export default function ShopMenu({
       </div>
 
       {/* Category filter */}
-      <div className="-mx-4 mb-8 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <CategoryIconPlay className="-mx-4 mb-8 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <ul className="flex w-max gap-2 lg:w-auto lg:flex-wrap lg:justify-center">
           {[ALL, ...menuCategories].map((c) => (
             <li key={c}>
               <button
                 onClick={() => setActive(c)}
                 aria-pressed={active === c}
-                className={`rounded-full px-4 py-2 font-(family-name:--font-josefin) text-sm font-bold whitespace-nowrap transition ${
+                className={`mlCatHost inline-flex items-center gap-1.5 rounded-full px-4 py-2 font-(family-name:--font-josefin) text-sm font-bold whitespace-nowrap transition ${
                   active === c
-                    ? "bg-orange text-white"
+                    ? "mlCatOnOrange bg-orange text-white"
                     : "bg-cream text-ink hover:bg-beige"
                 }`}
               >
+                {c !== ALL && <CategoryIcon category={c} size={18} />}
                 {c}
               </button>
             </li>
           ))}
         </ul>
-      </div>
+      </CategoryIconPlay>
 
       {/* Product grid */}
       <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
